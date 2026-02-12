@@ -58,13 +58,13 @@ const DayCell: React.FC<DayCellProps> = ({
       >
         {/* Date Number */}
         <div className={`text-xs font-medium absolute top-1 right-1 ${
-          shiftDay.shiftType === '' ? 'text-gray-400' : 'text-gray-700'
+          shiftDay.shiftType === ShiftType.FREE ? 'text-gray-400' : 'text-gray-700'
         }`}>
           {dayNumber}
         </div>
 
         {/* Shift Letter */}
-        {shiftDay.shiftType !== '' && (
+        {shiftDay.shiftType !== ShiftType.FREE && (
           <div className="text-2xl font-bold leading-none">
             {shiftDay.shiftType}
           </div>

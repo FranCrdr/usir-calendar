@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Download } from 'lucide-react';
 import CalendarView from '../components/CalendarView';
 import ShiftEditor from '../components/ShiftEditor';
 import PaintModeView from '../components/PaintModeView';
@@ -7,6 +8,7 @@ import SettingsView from '../components/SettingsView';
 import { ShiftType, ShiftDay } from '../types/ShiftTypes';
 import { saveShiftsToStorage, loadShiftsFromStorage, checkStorageSpace } from '../utils/storage';
 import { showSuccess, showError } from '../utils/toast';
+import { usePWA } from '../hooks/usePWA';
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -16,23 +18,14 @@ const Index = () => {
   const [isTurnosMode, setIsTurnosMode] = useState(false);
   const [isSettingsMode, setIsSettingsMode] = useState(false);
   const [shiftDays, setShiftDays] = useState<ShiftDay[]>([]);
-  const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.MORNING);
+  const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.WORK);
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  
+  const { isInstallable, installApp } = usePWA();
 
-  // Registrar Service Worker para funcionamiento offline
+  // Manejar cambios de conexión
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-          console.log('SW registered: ', registration);
-        })
-        .catch(registrationError => {
-          console.log('SW registration failed: ', registrationError);
-        });
-    }
-
-    // Manejar cambios de conexión
     const handleOnline = () => {
       setIsOnline(true);
       showSuccess('Conexión restaurada');
@@ -66,9 +59,9 @@ const Index = () => {
         
         // Cargar turnos guardados
         const savedShifts = loadShiftsFromStorage();
-        setShiftDays(savedShifts);
+        console.log('Datos cargados:', savedShifts.length, 'turnos');
         
-        console.log('Aplicación inicializada con', savedShifts.length, 'turnos guardados');
+        setShiftDays(savedShifts);
         
       } catch (error) {
         console.error('Error inicializando la aplicación:', error);
@@ -81,18 +74,21 @@ const Index = () => {
     initializeApp();
   }, []);
 
-  // Guardar automáticamente cuando cambien los turnos (con debounce)
+  // Guardar automáticamente cuando cambien los turnos (con debounce mejorado)
   useEffect(() => {
     if (!isLoading && shiftDays.length > 0) {
       const timer = setTimeout(() => {
+        console.log('Guardando cambios...', shiftDays.length, 'turnos');
         saveShiftsToStorage(shiftDays);
-      }, 500); // Debounce de 500ms
+      }, 300); // Debounce más rápido para mejor experiencia
       
       return () => clearTimeout(timer);
     }
   }, [shiftDays, isLoading]);
 
   const handleDayTap = (day: ShiftDay) => {
+    console.log('Día tocado:', day.date.toDateString());
+    
     if (isPaintMode) {
       // Paint mode: apply selected shift directly
       const updatedDays = shiftDays.map(d => 
@@ -100,17 +96,19 @@ const Index = () => {
           ? { ...d, shiftType: selectedPaintShift }
           : d
       );
+      
       setShiftDays(updatedDays);
-      showSuccess(`Turno ${selectedPaintShift || 'LIBRE'} aplicado`);
+      showSuccess(`Turno ${selectedPaintShift} aplicado al día ${day.date.getDate()}`);
       return;
     }
 
-    // Normal mode: open editor
+    // Normal mode: open editor for detailed editing
     setSelectedDay(day);
     setIsEditMode(true);
   };
 
   const handleDayLongPress = (day: ShiftDay) => {
+    console.log('Largo press en día:', day.date.toDateString());
     setSelectedDay(day);
     setIsEditMode(true);
   };
@@ -119,14 +117,20 @@ const Index = () => {
     const updatedDays = shiftDays.map(d => 
       d.date.toDateString() === updatedDay.date.toDateString() ? updatedDay : d
     );
+    
     setShiftDays(updatedDays);
-    showSuccess('Turno actualizado');
+    setIsEditMode(false);
+    showSuccess(`Turno actualizado para el ${updatedDay.date.toLocaleDateString()}`);
   };
 
   const togglePaintMode = () => {
     setIsPaintMode(!isPaintMode);
     setIsTurnosMode(false);
     setIsSettingsMode(false);
+    
+    if (!isPaintMode) {
+      showSuccess('Modo pintar activado - Selecciona un turno y toca días');
+    }
   };
 
   const toggleTurnosMode = () => {
@@ -173,6 +177,20 @@ const Index = () => {
         {!isOnline && (
           <div className="bg-yellow-500 text-white text-xs text-center py-1">
             🔄 Modo offline - Funcionando sin conexión
+          </div>
+        )}
+        
+        {/* Promp de instalación PWA */}
+        {isInstallable && (
+          <div className="bg-blue-600 text-white text-xs text-center py-1 flex justify-center items-center">
+            <span>📱 Instala la app para mejor experiencia</span>
+            <button 
+              onClick={installApp}
+              className="ml-2 px-2 py-1 bg-white text-blue-600 rounded text-xs font-medium flex items-center"
+            >
+              <Download className="w-3 h-3 mr-1" />
+              Instalar
+            </button>
           </div>
         )}
       </div>

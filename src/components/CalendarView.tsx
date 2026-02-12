@@ -72,7 +72,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     return {
       id: date.toISOString(),
       date,
-      shiftType: ShiftType.OFF,
+      shiftType: ShiftType.FREE,
       notes: ''
     };
   };
