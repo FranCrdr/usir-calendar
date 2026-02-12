@@ -1,5 +1,6 @@
 import React from 'react';
-import { X, Download, Share2, FileText, Calendar, Trash2 } from 'lucide-react';
+import { X, Download, Share2, FileText, Calendar, Trash2, Database, Smartphone } from 'lucide-react';
+import { saveShiftsToStorage, loadShiftsFromStorage, checkStorageSpace } from '../utils/storage';
 import { showSuccess, showError } from '../utils/toast';
 
 interface SettingsViewProps {
@@ -8,14 +9,14 @@ interface SettingsViewProps {
 }
 
 const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
+  const storageInfo = checkStorageSpace();
+  
   const exportAsPDF = () => {
     showSuccess('Función de exportación PDF en desarrollo');
-    // PDF export functionality would go here
   };
 
   const exportAsICS = () => {
     showSuccess('Función de exportación iCal en desarrollo');
-    // iCal export functionality would go here
   };
 
   const exportAsCSV = () => {
@@ -40,14 +41,37 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
 
   const shareAsImage = () => {
     showSuccess('Función de compartir imagen en desarrollo');
-    // Image share functionality would go here
   };
 
   const clearAllData = () => {
     if (confirm('¿Estás seguro de que quieres borrar todos los datos? Esta acción no se puede deshacer.')) {
-      localStorage.removeItem('shift_calendar_data');
-      localStorage.removeItem('shift_patterns_data');
+      localStorage.removeItem('shift_calendar_data_v2');
+      localStorage.removeItem('shift_patterns_data_v2');
+      localStorage.removeItem('shift_settings_data_v2');
       window.location.reload();
+      showSuccess('Todos los datos han sido borrados');
+    }
+  };
+
+  const backupData = () => {
+    try {
+      const backup = {
+        shifts: shiftDays,
+        timestamp: new Date().toISOString(),
+        version: '2.0'
+      };
+      
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `backup-turnos-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showSuccess('Copia de seguridad creada');
+    } catch (error) {
+      showError('Error creando copia de seguridad');
     }
   };
 
@@ -67,7 +91,33 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
 
         {/* Content */}
         <div className="p-4 overflow-y-auto">
-          <div className="space-y-4">
+          <div className="space-y-6">
+            {/* Información de Almacenamiento */}
+            <section>
+              <div className="flex items-center mb-3">
+                <Database className="w-4 h-4 text-blue-600 mr-2" />
+                <h3 className="font-medium text-gray-900">Almacenamiento Local</h3>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Turnos guardados:</span>
+                  <span className="font-medium">{shiftDays.length}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Espacio usado:</span>
+                  <span className="font-medium">
+                    {(storageInfo.used / 1024).toFixed(1)} KB (
+                    {storageInfo.percentage.toFixed(1)}%)
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Última modificación:</span>
+                  <span className="font-medium">{new Date().toLocaleDateString()}</span>
+                </div>
+              </div>
+            </section>
+
+            {/* Exportar Datos */}
             <section>
               <h3 className="font-medium text-gray-900 mb-3">Exportar Datos</h3>
               <div className="grid grid-cols-2 gap-3">
@@ -96,21 +146,21 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
                 </button>
                 
                 <button
-                  onClick={shareAsImage}
+                  onClick={backupData}
                   className="p-3 border border-gray-200 rounded-lg flex flex-col items-center hover:bg-gray-50 transition-colors"
                 >
                   <Share2 className="w-6 h-6 text-purple-600 mb-1" />
-                  <span className="text-sm">Imagen</span>
+                  <span className="text-sm">Backup</span>
                 </button>
               </div>
             </section>
 
+            {/* Gestión de Datos */}
             <section>
               <h3 className="font-medium text-gray-900 mb-3">Gestión de Datos</h3>
               <div className="space-y-2">
-                <div className="text-sm text-gray-600">
-                  <p>Turnos guardados: {shiftDays.length}</p>
-                  <p>Última actualización: {new Date().toLocaleDateString()}</p>
+                <div className="text-sm text-gray-600 mb-3">
+                  <p>Todos los datos se guardan automáticamente en tu dispositivo.</p>
                 </div>
                 
                 <button
@@ -123,12 +173,17 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
               </div>
             </section>
 
+            {/* Información de la App */}
             <section>
-              <h3 className="font-medium text-gray-900 mb-3">Información</h3>
+              <div className="flex items-center mb-3">
+                <Smartphone className="w-4 h-4 text-gray-600 mr-2" />
+                <h3 className="font-medium text-gray-900">Información</h3>
+              </div>
               <div className="text-sm text-gray-600 space-y-1">
-                <p>Versión: 1.0.0</p>
-                <p>Desarrollado con React & TypeScript</p>
-                <p>Optimizado para iPhone 15 Pro Max</p>
+                <p>Versión: 2.0.0</p>
+                <p>Datos guardados localmente</p>
+                <p>Compatible con iOS y Android</p>
+                <p>¡Tus datos son privados y nunca salen de tu dispositivo!</p>
               </div>
             </section>
           </div>

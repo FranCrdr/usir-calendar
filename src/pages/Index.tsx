@@ -5,8 +5,8 @@ import PaintModeView from '../components/PaintModeView';
 import TurnosView from '../components/TurnosView';
 import SettingsView from '../components/SettingsView';
 import { ShiftType, ShiftDay } from '../types/ShiftTypes';
-import { saveShiftsToStorage, loadShiftsFromStorage } from '../utils/storage';
-import { showSuccess } from '../utils/toast';
+import { saveShiftsToStorage, loadShiftsFromStorage, checkStorageSpace } from '../utils/storage';
+import { showSuccess, showError } from '../utils/toast';
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -17,12 +17,47 @@ const Index = () => {
   const [isSettingsMode, setIsSettingsMode] = useState(false);
   const [shiftDays, setShiftDays] = useState<ShiftDay[]>([]);
   const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.MORNING);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Cargar datos al iniciar la aplicación
   useEffect(() => {
-    // Load saved shifts on app start
-    const savedShifts = loadShiftsFromStorage();
-    setShiftDays(savedShifts);
+    const initializeApp = () => {
+      try {
+        setIsLoading(true);
+        
+        // Verificar espacio de almacenamiento
+        const storageInfo = checkStorageSpace();
+        if (storageInfo.percentage > 90) {
+          showError('Espacio de almacenamiento casi lleno. Considera exportar y limpiar datos.');
+        }
+        
+        // Cargar turnos guardados
+        const savedShifts = loadShiftsFromStorage();
+        setShiftDays(savedShifts);
+        
+        console.log('Aplicación inicializada con', savedShifts.length, 'turnos guardados');
+        
+      } catch (error) {
+        console.error('Error inicializando la aplicación:', error);
+        showError('Error al cargar los datos guardados');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeApp();
   }, []);
+
+  // Guardar automáticamente cuando cambien los turnos (con debounce)
+  useEffect(() => {
+    if (!isLoading && shiftDays.length > 0) {
+      const timer = setTimeout(() => {
+        saveShiftsToStorage(shiftDays);
+      }, 500); // Debounce de 500ms
+      
+      return () => clearTimeout(timer);
+    }
+  }, [shiftDays, isLoading]);
 
   const handleDayTap = (day: ShiftDay) => {
     if (isPaintMode) {
@@ -33,7 +68,7 @@ const Index = () => {
           : d
       );
       setShiftDays(updatedDays);
-      saveShiftsToStorage(updatedDays);
+      showSuccess(`Turno ${selectedPaintShift || 'LIBRE'} aplicado`);
       return;
     }
 
@@ -52,9 +87,6 @@ const Index = () => {
       d.date.toDateString() === updatedDay.date.toDateString() ? updatedDay : d
     );
     setShiftDays(updatedDays);
-    saveShiftsToStorage(updatedDays);
-    setIsEditMode(false);
-    setSelectedDay(null);
     showSuccess('Turno actualizado');
   };
 
@@ -75,6 +107,30 @@ const Index = () => {
     setIsPaintMode(false);
     setIsTurnosMode(false);
   };
+
+  // Manejar cierre/refresh de la página
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      // Guardar datos antes de cerrar/refrescar
+      if (shiftDays.length > 0) {
+        saveShiftsToStorage(shiftDays);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [shiftDays]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando tus turnos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 safe-area-inset-bottom">
