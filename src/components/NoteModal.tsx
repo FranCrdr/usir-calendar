@@ -10,12 +10,13 @@ interface NoteModalProps {
 
 const NoteModal: React.FC<NoteModalProps> = ({ shiftDay, onSave, onClose }) => {
   const [note, setNote] = useState(shiftDay.notes || '');
-  const [isEditing, setIsEditing] = useState(!shiftDay.notes);
+  const [isEditing, setIsEditing] = useState(!shiftDay.notes || shiftDay.notes.trim() === '');
 
+  // Reiniciar estado cuando cambia el día
   useEffect(() => {
     setNote(shiftDay.notes || '');
-    setIsEditing(!shiftDay.notes || note === '');
-  }, [shiftDay, note]);
+    setIsEditing(!shiftDay.notes || shiftDay.notes.trim() === '');
+  }, [shiftDay]);
 
   const handleSave = () => {
     if (onSave) {
@@ -38,6 +39,15 @@ const NoteModal: React.FC<NoteModalProps> = ({ shiftDay, onSave, onClose }) => {
       day: 'numeric'
     });
   };
+
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+  // Enfocar automáticamente cuando se activa la edición
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [isEditing]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -67,7 +77,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ shiftDay, onSave, onClose }) => {
               </label>
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className="flex items-center text-sm text-blue-600"
+                className="flex items-center text-sm text-blue-600 hover:text-blue-700"
               >
                 <Edit3 className="w-3 h-3 mr-1" />
                 {isEditing ? 'Listo' : 'Editar'}
@@ -75,24 +85,34 @@ const NoteModal: React.FC<NoteModalProps> = ({ shiftDay, onSave, onClose }) => {
             </div>
             
             {isEditing ? (
-              <textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="Añade notas para este día (cumpleaños, eventos importantes, recordatorios...)"
-                className="w-full p-3 border border-gray-300 rounded-lg resize-none"
-                rows={4}
-                autoFocus
-              />
+              <>
+                <textarea
+                  ref={textareaRef}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  onKeyDown={handleKeyPress}
+                  placeholder="Añade notas para este día (cumpleaños, eventos importantes, recordatorios...)"
+                  className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                  rows={4}
+                  autoFocus
+                />
+                <div className="flex justify-between text-xs text-gray-500 mt-2">
+                  <span>Presiona Ctrl+Enter para guardar rápidamente</span>
+                  <span>{note.length}/500 caracteres</span>
+                </div>
+              </>
             ) : (
               <div 
-                className="p-3 border border-transparent rounded-lg min-h-[100px] bg-gray-50"
+                className="p-3 border border-transparent rounded-lg min-h-[100px] bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
                 onClick={() => setIsEditing(true)}
               >
-                {note ? (
-                  <p className="text-gray-700 whitespace-pre-wrap">{note}</p>
+                {note && note.trim() ? (
+                  <p className="text-gray-700 whitespace-pre-wrap break-words">{note}</p>
                 ) : (
-                  <span className="text-gray-400">Toca para añadir notas...</span>
+                  <div className="text-gray-400 text-center flex flex-col items-center justify-center h-full">
+                    <Edit3 className="w-5 h-5 mb-2 opacity-50" />
+                    <span>Toca para añadir notas...</span>
+                  </div>
                 )}
               </div>
             )}
@@ -109,7 +129,12 @@ const NoteModal: React.FC<NoteModalProps> = ({ shiftDay, onSave, onClose }) => {
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 py-4 bg-blue-600 text-white font-medium transition-colors hover:bg-blue-700"
+            disabled={!note.trim() && shiftDay.notes === note}
+            className={`flex-1 py-4 font-medium transition-colors ${
+              note.trim() || shiftDay.notes !== note
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+            }`}
           >
             Guardar Nota
           </button>
