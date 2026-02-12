@@ -187,7 +187,7 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
                     ))}
                   </div>
                 </div>
-              );
+              )}
 
               <div className="flex space-x-2">
                 <button
