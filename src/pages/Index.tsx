@@ -87,25 +87,15 @@ const Index = () => {
   }, [shiftDays, isLoading]);
 
   const handleDayTap = (day: ShiftDay) => {
-    console.log('Día actualizado:', day.date.toDateString());
+    console.log('Día actualizado:', day.date.toDateString(), 'Turno:', day.shiftType);
     
-    // Si estamos en modo pintar, usar la funcionalidad original
-    if (isPaintMode) {
-      const updatedDays = shiftDays.map(d => 
-        d.date.toDateString() === day.date.toDateString() 
-          ? { ...d, shiftType: selectedPaintShift }
-          : d
-      );
-      
-      setShiftDays(updatedDays);
-      showSuccess(`Turno ${selectedPaintShift} aplicado al día ${day.date.getDate()}`);
-      return;
-    }
-
-    // Si recibimos un día actualizado (desde el selector), actualizar la lista
-    const updatedDays = shiftDays.map(d => 
-      d.date.toDateString() === day.date.toDateString() ? day : d
+    // Crear una nueva lista actualizada de días
+    const updatedDays = shiftDays.filter(d => 
+      d.date.toDateString() !== day.date.toDateString()
     );
+    
+    // Agregar el día actualizado
+    updatedDays.push(day);
     
     setShiftDays(updatedDays);
     showSuccess(`Turno ${day.shiftType} asignado al día ${day.date.getDate()}`);
