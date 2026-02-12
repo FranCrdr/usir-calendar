@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Download } from 'lucide-react';
 import CalendarView from '../components/CalendarView';
 import ShiftEditor from '../components/ShiftEditor';
+import NoteModal from '../components/NoteModal';
 import PaintModeView from '../components/PaintModeView';
 import TurnosView from '../components/TurnosView';
 import SettingsView from '../components/SettingsView';
@@ -13,7 +14,9 @@ import { usePWA } from '../hooks/usePWA';
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<ShiftDay | null>(null);
+  const [dayForNote, setDayForNote] = useState<ShiftDay | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isNoteMode, setIsNoteMode] = useState(false);
   const [isPaintMode, setIsPaintMode] = useState(false);
   const [isTurnosMode, setIsTurnosMode] = useState(false);
   const [isSettingsMode, setIsSettingsMode] = useState(false);
@@ -22,7 +25,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showPaintToolbar, setShowPaintToolbar] = useState(false);
-  const [paintedDays, setPaintedDays] = useState<Record<string, ShiftType>>({}); // Memoria de días pintados
+  const [paintedDays, setPaintedDays] = useState<Record<string, ShiftType>>({});
   
   const { isInstallable, installApp } = usePWA();
 
@@ -113,6 +116,12 @@ const Index = () => {
     setIsEditMode(true);
   };
 
+  const handleDayNoteTap = (day: ShiftDay) => {
+    console.log('Toque para anotación en día:', day.date.toDateString());
+    setDayForNote(day);
+    setIsNoteMode(true);
+  };
+
   const updateShiftDay = (updatedDay: ShiftDay) => {
     const updatedDays = shiftDays.map(d => 
       d.date.toDateString() === updatedDay.date.toDateString() ? updatedDay : d
@@ -123,26 +132,38 @@ const Index = () => {
     showSuccess(`Turno actualizado para el ${updatedDay.date.toLocaleDateString()}`);
   };
 
+  const updateNote = (note: string) => {
+    if (!dayForNote) return;
+    
+    const updatedDays = shiftDays.map(d => 
+      d.date.toDateString() === dayForNote.date.toDateString() ? { ...d, notes: note } : d
+    );
+    
+    setShiftDays(updatedDays);
+    setIsNoteMode(false);
+    showSuccess(`Nota actualizada para el ${dayForNote.date.toLocaleDateString()}`);
+  };
+
   const startPaintMode = () => {
     setIsPaintMode(true);
     setIsTurnosMode(false);
     setIsSettingsMode(false);
     setShowPaintToolbar(false);
-    setPaintedDays({}); // Resetear memoria al iniciar modo pintar
+    setPaintedDays({});
   };
 
   const finishPaintMode = () => {
     setIsPaintMode(false);
     setShowPaintToolbar(false);
-    setPaintedDays({}); // Limpiar memoria al terminar modo pintar
+    setPaintedDays({});
     showSuccess('Modo pintar terminado');
   };
 
   const handlePaintShiftSelect = (shiftType: ShiftType) => {
     setSelectedPaintShift(shiftType);
-    setIsPaintMode(false); // Cierra la ventana de selección
-    setShowPaintToolbar(true); // Muestra la barra de pintar activa
-    setPaintedDays({}); // Resetear memoria al cambiar de color
+    setIsPaintMode(false);
+    setShowPaintToolbar(true);
+    setPaintedDays({});
     showSuccess(`Modo pintar activo: ${shiftType}`);
   };
 
@@ -151,23 +172,19 @@ const Index = () => {
       const dateKey = day.date.toDateString();
       const currentShiftType = day.shiftType;
       
-      // Verificar si ya hemos pintado este día en esta sesión
       const wasPreviouslyPainted = dateKey in paintedDays;
       
       let newShiftType: ShiftType;
       
       if (wasPreviouslyPainted) {
-        // Si ya fue pintado, revertir al estado anterior almacenado
         newShiftType = paintedDays[dateKey];
-        // Remover de la memoria porque ya revertimos
         const newPaintedDays = { ...paintedDays };
         delete newPaintedDays[dateKey];
         setPaintedDays(newPaintedDays);
       } else {
-        // Si no ha sido pintado aún, almacenar el estado anterior y aplicar nuevo turno
         setPaintedDays({
           ...paintedDays,
-          [dateKey]: currentShiftType // Guardar el estado actual como "anterior"
+          [dateKey]: currentShiftType
         });
         newShiftType = selectedPaintShift;
       }
@@ -196,10 +213,8 @@ const Index = () => {
     setShowPaintToolbar(false);
   };
 
-  // Manejar cierre/refresh de la página
   useEffect(() => {
     const handleBeforeUnload = () => {
-      // Guardar datos antes de cerrar/refrescar
       if (shiftDays.length > 0) {
         saveShiftsToStorage(shiftDays);
       }
@@ -224,14 +239,12 @@ const Index = () => {
     <div className="min-h-screen bg-gray-50 safe-area-inset-bottom">
       {/* Status Bar Spacer */}
       <div className="h-[44px] bg-white">
-        {/* Indicador de conexión */}
         {!isOnline && (
           <div className="bg-yellow-500 text-white text-xs text-center py-1">
             🔄 Modo offline - Funcionando sin conexión
           </div>
         )}
         
-        {/* Promp de instalación PWA */}
         {isInstallable && (
           <div className="bg-blue-600 text-white text-xs text-center py-1 flex justify-center items-center">
             <span>📱 Instala la app para mejor experiencia</span>
@@ -246,7 +259,6 @@ const Index = () => {
         )}
       </div>
       
-      {/* Barra de pintar activa */}
       {showPaintToolbar && (
         <div className="bg-blue-600 text-white py-2 px-4 text-center flex justify-between items-center">
           <span className="flex-1 text-sm font-medium">
@@ -261,7 +273,6 @@ const Index = () => {
         </div>
       )}
       
-      {/* Main Content */}
       <div className={`flex flex-col ${showPaintToolbar ? 'h-[calc(100vh-44px-40px)]' : 'h-[calc(100vh-44px)]'}`}>
         <CalendarView
           currentDate={currentDate}
@@ -269,10 +280,10 @@ const Index = () => {
           shiftDays={shiftDays}
           onDayTap={showPaintToolbar ? paintDay : handleDayTap}
           onLongPress={handleDayLongPress}
+          onDayNoteTap={handleDayNoteTap}
           isPaintMode={showPaintToolbar}
         />
 
-        {/* Bottom Toolbar */}
         <div className="bg-white border-t border-gray-200 py-3 px-4 safe-area-inset-bottom">
           <div className="flex justify-between items-center max-w-md mx-auto">
             <button
@@ -308,12 +319,19 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Modal Overlays */}
       {isEditMode && selectedDay && (
         <ShiftEditor
           shiftDay={selectedDay}
           onSave={updateShiftDay}
           onClose={() => setIsEditMode(false)}
+        />
+      )}
+
+      {isNoteMode && dayForNote && (
+        <NoteModal
+          shiftDay={dayForNote}
+          onSave={updateNote}
+          onClose={() => setIsNoteMode(false)}
         />
       )}
 
