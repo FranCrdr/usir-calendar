@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Paintbrush, RotateCcw, Eraser } from 'lucide-react';
+import { X, Paintbrush, RotateCcw } from 'lucide-react';
 import { ShiftType, getShiftColor } from '../types/ShiftTypes';
 
 interface PaintModeViewProps {
@@ -23,10 +23,6 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
 
   const handleShiftSelect = (shiftType: ShiftType) => {
     onSelectShift(shiftType);
-  };
-
-  const handleEraserSelect = () => {
-    onSelectShift(ShiftType.FREE);
   };
 
   return (
@@ -62,24 +58,6 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
             Selecciona un tipo de turno y podrás pintar días directamente en el calendario.
             Haz clic nuevamente en el mismo día para revertir el cambio.
           </p>
-
-          {/* Botón Borrar */}
-          <div className="mb-4">
-            <button
-              onClick={handleEraserSelect}
-              className={`w-full p-4 rounded-lg text-center transition-all min-h-[80px] border-2 ${
-                selectedShift === ShiftType.FREE 
-                  ? 'bg-red-100 text-red-800 border-red-400 ring-2 ring-red-500 ring-offset-2 scale-105' 
-                  : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'
-              }`}
-            >
-              <div className="flex items-center justify-center mb-2">
-                <Eraser className="w-6 h-6 mr-2" />
-                <span className="text-lg font-bold">Borrar</span>
-              </div>
-              <div className="text-xs">Limpia el turno del día seleccionado</div>
-            </button>
-          </div>
 
           {/* Opciones de turnos */}
           <div className="grid grid-cols-2 gap-3">

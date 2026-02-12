@@ -205,7 +205,19 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 safe-area-inset-bottom">
       {/* Status Bar Spacer */}
-      <div className="h-[44px] bg-white">
+      <div className="bg-white">
+        {/* Título USIR arriba del todo */}
+        <div className="bg-gradient-to-r from-red-600 to-black py-4">
+          <div className="text-center">
+            <h1 className="text-4xl font-black uppercase tracking-wider text-white">
+              <span className="text-white">U</span>
+              <span className="text-red-600">S</span>
+              <span className="text-white">I</span>
+              <span className="text-red-600">R</span>
+            </h1>
+          </div>
+        </div>
+        
         {!isOnline && (
           <div className="bg-yellow-500 text-white text-xs text-center py-1">
             🔄 Modo offline - Funcionando sin conexión
@@ -242,7 +254,7 @@ const Index = () => {
       )}
       
       {/* Main Content */}
-      <div className={`flex flex-col ${showPaintToolbar ? 'h-[calc(100vh-44px-40px)]' : 'h-[calc(100vh-44px)]'}`}>
+      <div className={`flex flex-col ${showPaintToolbar ? 'h-[calc(100vh-80px-40px)]' : 'h-[calc(100vh-80px)]'}`}>
         <CalendarView
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
