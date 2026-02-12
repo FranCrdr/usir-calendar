@@ -2,7 +2,6 @@ import React from 'react';
 import { X, Download, Share2, FileText, Calendar, Trash2, Database, Smartphone, FileDown, Clipboard } from 'lucide-react';
 import { saveShiftsToStorage, loadShiftsFromStorage, checkStorageSpace } from '../utils/storage';
 import { generateCalendarSummary, exportAsTextFile } from '../utils/export';
-import { showSuccess, showError } from '../utils/toast';
 
 interface SettingsViewProps {
   shiftDays: any[];
@@ -13,11 +12,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
   const storageInfo = checkStorageSpace();
   
   const exportAsPDF = () => {
-    showSuccess('Función de exportación PDF en desarrollo');
+    // Función de exportación PDF sin notificación
   };
 
   const exportAsICS = () => {
-    showSuccess('Función de exportación iCal en desarrollo');
+    // Función de exportación iCal sin notificación
   };
 
   const exportAsCSV = () => {
@@ -33,10 +32,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
       a.download = `turnos-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-      
-      showSuccess('Calendario exportado como CSV');
     } catch (error) {
-      showError('Error al exportar CSV');
+      console.error('Error al exportar CSV:', error);
     }
   };
 
@@ -44,9 +41,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
     try {
       const summary = generateCalendarSummary(shiftDays);
       exportAsTextFile(summary, `resumen-turnos-${new Date().toISOString().split('T')[0]}.txt`);
-      showSuccess('Resumen generado y descargado');
     } catch (error) {
-      showError('Error generando resumen');
+      console.error('Error generando resumen:', error);
     }
   };
 
@@ -54,9 +50,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
     try {
       const summary = generateCalendarSummary(shiftDays);
       await navigator.clipboard.writeText(summary);
-      showSuccess('Resumen copiado al portapapeles');
     } catch (error) {
-      showError('Error copiando al portapapeles');
+      console.error('Error copiando al portapapeles:', error);
     }
   };
 
@@ -66,7 +61,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
       localStorage.removeItem('shift_patterns_data_v2');
       localStorage.removeItem('shift_settings_data_v2');
       window.location.reload();
-      showSuccess('Todos los datos han sido borrados');
     }
   };
 
@@ -85,10 +79,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
       a.download = `backup-turnos-${new Date().toISOString().split('T')[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      
-      showSuccess('Copia de seguridad creada');
     } catch (error) {
-      showError('Error creando copia de seguridad');
+      console.error('Error creando copia de seguridad:', error);
     }
   };
 

@@ -8,7 +8,6 @@ import TurnosView from '../components/TurnosView';
 import SettingsView from '../components/SettingsView';
 import { ShiftType, ShiftDay } from '../types/ShiftTypes';
 import { saveShiftsToStorage, loadShiftsFromStorage, checkStorageSpace } from '../utils/storage';
-import { showSuccess, showError } from '../utils/toast';
 import { usePWA } from '../hooks/usePWA';
 
 const Index = () => {
@@ -32,12 +31,10 @@ const Index = () => {
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
-      showSuccess('Conexión restaurada');
     };
 
     const handleOffline = () => {
       setIsOnline(false);
-      showSuccess('Modo offline activado - La app sigue funcionando');
     };
 
     window.addEventListener('online', handleOnline);
@@ -58,7 +55,7 @@ const Index = () => {
         // Verificar espacio de almacenamiento
         const storageInfo = checkStorageSpace();
         if (storageInfo.percentage > 90) {
-          showError('Espacio de almacenamiento casi lleno. Considera exportar y limpiar datos.');
+          console.warn('Espacio de almacenamiento casi lleno. Considera exportar y limpiar datos.');
         }
         
         // Cargar turnos guardados
@@ -69,7 +66,6 @@ const Index = () => {
         
       } catch (error) {
         console.error('Error inicializando la aplicación:', error);
-        showError('Error al cargar los datos guardados');
       } finally {
         setIsLoading(false);
       }
@@ -102,11 +98,6 @@ const Index = () => {
     updatedDays.push(day);
     
     setShiftDays(updatedDays);
-    
-    // Solo mostrar notificación si no estamos en modo pintar continuo
-    if (!showPaintToolbar) {
-      showSuccess(`Turno ${day.shiftType} asignado al día ${day.date.getDate()}`);
-    }
   };
 
   const handleDayLongPress = (day: ShiftDay) => {
@@ -128,7 +119,6 @@ const Index = () => {
     
     setShiftDays(updatedDays);
     setIsEditMode(false);
-    showSuccess(`Turno actualizado para el ${updatedDay.date.toLocaleDateString()}`);
   };
 
   const updateNote = (note: string) => {
@@ -140,7 +130,6 @@ const Index = () => {
     
     setShiftDays(updatedDays);
     setIsNoteMode(false);
-    showSuccess(`Nota actualizada para el ${dayForNote.date.toLocaleDateString()}`);
   };
 
   const startPaintMode = () => {
@@ -155,7 +144,6 @@ const Index = () => {
     console.log('Terminando modo pintar...');
     setIsPaintMode(false);
     setShowPaintToolbar(false);
-    showSuccess('Modo pintar terminado');
   };
 
   const handlePaintShiftSelect = (shiftType: ShiftType) => {
@@ -163,7 +151,6 @@ const Index = () => {
     setSelectedPaintShift(shiftType);
     setIsPaintMode(false);
     setShowPaintToolbar(true);
-    showSuccess(`Modo pintar activo: ${shiftType}`);
   };
 
   const paintDay = (day: ShiftDay) => {

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { X, Plus, Calendar, Trash2 } from 'lucide-react';
 import { ShiftType, ShiftPattern, getShiftColor } from '../types/ShiftTypes';
 import { loadPatternsFromStorage, savePatternsToStorage } from '../utils/storage';
-import { showSuccess, showError } from '../utils/toast';
 
 interface TurnosViewProps {
   shiftDays: any[];
@@ -42,12 +41,10 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
 
   const createPattern = () => {
     if (!newPatternName.trim()) {
-      showError('Por favor ingresa un nombre para el patrón');
       return;
     }
 
     if (newPattern.length === 0) {
-      showError('El patrón debe tener al menos un turno');
       return;
     }
 
@@ -65,19 +62,16 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
     setNewPatternName('');
     setNewPattern([]);
     setIsCreating(false);
-    showSuccess('Patrón creado con éxito');
   };
 
   const deletePattern = (patternId: string) => {
     const updatedPatterns = patterns.filter(p => p.id !== patternId);
     setPatterns(updatedPatterns);
     savePatternsToStorage(updatedPatterns);
-    showSuccess('Patrón eliminado');
   };
 
   const applyPattern = (pattern: ShiftPattern, startDate: Date) => {
-    // This would apply the pattern starting from the selected date
-    showSuccess(`Patrón "${pattern.name}" aplicado desde ${startDate.toLocaleDateString()}`);
+    // Función para aplicar patrones sin notificación
   };
 
   const shiftButtons = [
@@ -193,7 +187,7 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
                     ))}
                   </div>
                 </div>
-              )}
+              );
 
               <div className="flex space-x-2">
                 <button
