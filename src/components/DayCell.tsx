@@ -111,9 +111,9 @@ const DayCell: React.FC<DayCellProps> = ({
             {dayNumber}
           </div>
 
-          {/* Shift Letter */}
+          {/* Shift Letter - Reducido a la mitad del tamaño */}
           {shiftDay.shiftType !== ShiftType.FREE && (
-            <div className="text-2xl font-bold leading-none">
+            <div className="text-lg font-bold leading-none">
               {shiftDay.shiftType}
             </div>
           )}
