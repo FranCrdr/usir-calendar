@@ -14,10 +14,11 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
   onClose
 }) => {
   const shiftOptions = [
-    { type: ShiftType.MORNING, label: 'Mañana', icon: '☀️' },
-    { type: ShiftType.AFTERNOON, label: 'Tarde', icon: '🌇' },
-    { type: ShiftType.NIGHT, label: 'Noche', icon: '🌙' },
-    { type: ShiftType.OFF, label: 'Libre', icon: '🏖️' }
+    { type: ShiftType.WORK, label: 'Trabajo', icon: '🛠️', description: 'Turno normal de trabajo' },
+    { type: ShiftType.FREE, label: 'Libre', icon: '🏖️', description: 'Día libre' },
+    { type: ShiftType.REINFORCEMENT, label: 'Refuerzo', icon: '💪', description: 'Turno de refuerzo' },
+    { type: ShiftType.ALERT, label: 'Alerta', icon: '🚨', description: 'Alerta - Puerta norte/oficina' },
+    { type: ShiftType.IMAGINARY, label: 'Imaginaria', icon: '✨', description: 'Turno imaginaria' }
   ];
 
   return (
@@ -48,16 +49,17 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
               <button
                 key={option.type}
                 onClick={() => onSelectShift(option.type)}
-                className={`p-4 rounded-lg text-center transition-all ${
+                className={`p-4 rounded-lg text-center transition-all min-h-[100px] ${
                   getShiftColor(option.type)
                 } ${
                   selectedShift === option.type 
                     ? 'ring-2 ring-blue-500 ring-offset-2 scale-105' 
                     : 'opacity-70 hover:opacity-100'
                 }`}
+                title={option.description}
               >
                 <div className="text-2xl mb-1">{option.icon}</div>
-                <div className="text-lg font-bold">{option.type || '—'}</div>
+                <div className="text-lg font-bold">{option.type}</div>
                 <div className="text-sm opacity-80">{option.label}</div>
               </button>
             ))}

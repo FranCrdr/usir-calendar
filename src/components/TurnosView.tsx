@@ -24,14 +24,14 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
   const defaultPatterns: ShiftPattern[] = [
     {
       id: '1',
-      name: '2x2 Clásico',
-      pattern: [ShiftType.MORNING, ShiftType.MORNING, ShiftType.AFTERNOON, ShiftType.AFTERNOON, ShiftType.NIGHT, ShiftType.NIGHT, ShiftType.OFF, ShiftType.OFF],
-      color: 'bg-blue-100'
+      name: 'Patrón Laboral Semanal',
+      pattern: [ShiftType.WORK, ShiftType.WORK, ShiftType.WORK, ShiftType.WORK, ShiftType.WORK, ShiftType.FREE, ShiftType.FREE],
+      color: 'bg-red-100'
     },
     {
       id: '2',
-      name: 'Continua 4x4',
-      pattern: [ShiftType.MORNING, ShiftType.AFTERNOON, ShiftType.NIGHT, ShiftType.OFF],
+      name: 'Patrón con Refuerzos',
+      pattern: [ShiftType.WORK, ShiftType.REINFORCEMENT, ShiftType.WORK, ShiftType.FREE, ShiftType.ALERT, ShiftType.WORK, ShiftType.FREE],
       color: 'bg-green-100'
     }
   ];
@@ -79,6 +79,14 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
     // This would apply the pattern starting from the selected date
     showSuccess(`Patrón "${pattern.name}" aplicado desde ${startDate.toLocaleDateString()}`);
   };
+
+  const shiftButtons = [
+    { type: ShiftType.WORK, label: 'Trabajo' },
+    { type: ShiftType.FREE, label: 'Libre' },
+    { type: ShiftType.REINFORCEMENT, label: 'Refuerzo' },
+    { type: ShiftType.ALERT, label: 'Alerta' },
+    { type: ShiftType.IMAGINARY, label: 'Imaginaria' }
+  ];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center p-4 z-50">
@@ -156,14 +164,15 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
                 className="w-full p-3 border border-gray-300 rounded-lg"
               />
 
-              <div className="grid grid-cols-4 gap-2">
-                {[ShiftType.MORNING, ShiftType.AFTERNOON, ShiftType.NIGHT, ShiftType.OFF].map(type => (
+              <div className="grid grid-cols-3 gap-2">
+                {shiftButtons.map(({ type, label }) => (
                   <button
                     key={type}
                     onClick={() => addShiftToPattern(type)}
-                    className={`p-3 rounded-lg text-center ${getShiftColor(type)}`}
+                    className={`p-3 rounded-lg text-center min-h-[60px] ${getShiftColor(type)}`}
                   >
-                    <div className="text-lg font-bold">{type || '—'}</div>
+                    <div className="text-lg font-bold">{type}</div>
+                    <div className="text-xs">{label}</div>
                   </button>
                 ))}
               </div>
@@ -211,14 +220,16 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
 // Helper function for shift colors
 const getShiftColor = (shiftType: ShiftType): string => {
   switch (shiftType) {
-    case ShiftType.MORNING:
+    case ShiftType.WORK:
+      return "bg-red-200 text-red-800";
+    case ShiftType.FREE:
+      return "bg-green-200 text-green-800";
+    case ShiftType.REINFORCEMENT:
+      return "bg-emerald-600 text-white";
+    case ShiftType.ALERT:
+      return "bg-purple-200 text-purple-800";
+    case ShiftType.IMAGINARY:
       return "bg-yellow-200 text-yellow-800";
-    case ShiftType.AFTERNOON:
-      return "bg-pink-200 text-pink-800";
-    case ShiftType.NIGHT:
-      return "bg-cyan-200 text-cyan-800";
-    case ShiftType.OFF:
-      return "bg-gray-100 text-gray-500";
     default:
       return "bg-gray-50 text-gray-400";
   }

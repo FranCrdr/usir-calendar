@@ -58,10 +58,11 @@ export const generateCalendarSummary = (shiftDays: ShiftDay[]): string => {
 
 const getShiftLabel = (shiftType: string): string => {
   switch (shiftType) {
-    case 'M': return 'Mañana';
-    case 'T': return 'Tarde';
-    case 'N': return 'Noche';
-    case '': return 'Libre';
+    case 'T': return 'Trabajo';
+    case 'L': return 'Libre';
+    case 'R': return 'Refuerzo';
+    case 'A': return 'Alerta';
+    case 'I': return 'Imaginaria';
     default: return '';
   }
 };

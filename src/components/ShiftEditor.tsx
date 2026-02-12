@@ -16,12 +16,13 @@ const ShiftEditor: React.FC<ShiftEditorProps> = ({ shiftDay, onSave, onClose }) 
     setEditedDay(shiftDay);
   }, [shiftDay]);
 
-  const cycleShiftType = () => {
-    const shiftTypes = [ShiftType.MORNING, ShiftType.AFTERNOON, ShiftType.NIGHT, ShiftType.OFF];
-    const currentIndex = shiftTypes.indexOf(editedDay.shiftType);
-    const nextIndex = (currentIndex + 1) % shiftTypes.length;
-    setEditedDay({ ...editedDay, shiftType: shiftTypes[nextIndex] });
-  };
+  const shiftTypes = [
+    { type: ShiftType.WORK, label: 'Trabajo', icon: '🛠️', description: 'Turno normal de trabajo' },
+    { type: ShiftType.FREE, label: 'Libre', icon: '🏖️', description: 'Día libre' },
+    { type: ShiftType.REINFORCEMENT, label: 'Refuerzo', icon: '💪', description: 'Turno de refuerzo' },
+    { type: ShiftType.ALERT, label: 'Alerta', icon: '🚨', description: 'Alerta - Puerta norte/oficina' },
+    { type: ShiftType.IMAGINARY, label: 'Imaginaria', icon: '✨', description: 'Turno imaginaria' }
+  ];
 
   const handleSave = () => {
     onSave(editedDay);
@@ -61,26 +62,23 @@ const ShiftEditor: React.FC<ShiftEditorProps> = ({ shiftDay, onSave, onClose }) 
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Tipo de Turno
             </label>
-            <div className="grid grid-cols-4 gap-2">
-              {[ShiftType.MORNING, ShiftType.AFTERNOON, ShiftType.NIGHT, ShiftType.OFF].map(type => (
+            <div className="grid grid-cols-3 gap-2">
+              {shiftTypes.map(({ type, label, icon, description }) => (
                 <button
                   key={type}
                   onClick={() => setEditedDay({ ...editedDay, shiftType: type })}
-                  className={`p-3 rounded-lg text-center transition-all ${
+                  className={`p-3 rounded-lg text-center transition-all min-h-[80px] ${
                     getShiftColor(type)
                   } ${
                     editedDay.shiftType === type 
                       ? 'ring-2 ring-blue-500 ring-offset-2' 
                       : 'opacity-70 hover:opacity-100'
                   }`}
+                  title={description}
                 >
-                  <div className="text-lg font-bold">{type || '—'}</div>
-                  <div className="text-xs mt-1">
-                    {type === ShiftType.MORNING && 'Mañana'}
-                    {type === ShiftType.AFTERNOON && 'Tarde'}
-                    {type === ShiftType.NIGHT && 'Noche'}
-                    {type === ShiftType.OFF && 'Libre'}
-                  </div>
+                  <div className="text-xl mb-1">{icon}</div>
+                  <div className="text-lg font-bold">{type}</div>
+                  <div className="text-xs mt-1">{label}</div>
                 </button>
               ))}
             </div>
