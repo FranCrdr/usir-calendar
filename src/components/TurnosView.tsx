@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Calendar, Trash2 } from 'lucide-react';
 import { ShiftType, ShiftPattern } from '../types/ShiftTypes';
-import { loadPatternsFromStorage, savePatternsFromStorage } from '../utils/storage';
+import { loadPatternsFromStorage, savePatternsToStorage } from '../utils/storage';
 import { showSuccess, showError } from '../utils/toast';
 
 interface TurnosViewProps {
@@ -60,7 +60,7 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
 
     const updatedPatterns = [...patterns, newPatternObj];
     setPatterns(updatedPatterns);
-    savePatternsFromStorage(updatedPatterns);
+    savePatternsToStorage(updatedPatterns);
 
     setNewPatternName('');
     setNewPattern([]);
@@ -71,7 +71,7 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
   const deletePattern = (patternId: string) => {
     const updatedPatterns = patterns.filter(p => p.id !== patternId);
     setPatterns(updatedPatterns);
-    savePatternsFromStorage(updatedPatterns);
+    savePatternsToStorage(updatedPatterns);
     showSuccess('Patrón eliminado');
   };
 
