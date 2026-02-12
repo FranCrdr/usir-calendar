@@ -115,14 +115,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
       </div>
 
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-px bg-gray-200 p-4">
+      {/* Calendar Grid - Removed padding to maximize space */}
+      <div className="grid grid-cols-7 gap-px bg-gray-200">
         {days.map((date, index) => (
           <DayCell
             key={`${date.toISOString()}-${index}`}
             shiftDay={getShiftForDate(date)}
             onTap={onDayTap}
-            onLongPress={onDayLongPress}
+            onLongPress={onLongPress}
             isPaintMode={isPaintMode}
             isCurrentMonth={date.getMonth() === currentDate.getMonth()}
           />
