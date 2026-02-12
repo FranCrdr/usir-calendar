@@ -25,6 +25,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showPaintToolbar, setShowPaintToolbar] = useState(false);
+  const [lastPaintedDays, setLastPaintedDays] = useState<Record<string, ShiftType>>({});
   
   const { isInstallable, installApp } = usePWA();
 
@@ -149,12 +150,14 @@ const Index = () => {
     setIsTurnosMode(false);
     setIsSettingsMode(false);
     setShowPaintToolbar(false);
+    setLastPaintedDays({});
   };
 
   const finishPaintMode = () => {
     console.log('Terminando modo pintar...');
     setIsPaintMode(false);
     setShowPaintToolbar(false);
+    setLastPaintedDays({});
     showSuccess('Modo pintar terminado');
   };
 
@@ -163,16 +166,37 @@ const Index = () => {
     setSelectedPaintShift(shiftType);
     setIsPaintMode(false);
     setShowPaintToolbar(true);
+    setLastPaintedDays({});
     showSuccess(`Modo pintar activo: ${shiftType}`);
   };
 
   const paintDay = (day: ShiftDay) => {
     if (showPaintToolbar) {
-      console.log('Pintando día:', day.date.toDateString(), 'con turno:', selectedPaintShift);
+      const dateKey = day.date.toDateString();
+      const wasPreviouslyPainted = dateKey in lastPaintedDays;
+      
+      let newShiftType: ShiftType;
+      
+      if (wasPreviouslyPainted) {
+        // Revertir al estado anterior
+        newShiftType = lastPaintedDays[dateKey];
+        const newLastPaintedDays = { ...lastPaintedDays };
+        delete newLastPaintedDays[dateKey];
+        setLastPaintedDays(newLastPaintedDays);
+        showSuccess(`Día revertido a ${newShiftType}`);
+      } else {
+        // Pintar con el turno seleccionado y guardar el estado anterior
+        setLastPaintedDays({
+          ...lastPaintedDays,
+          [dateKey]: day.shiftType
+        });
+        newShiftType = selectedPaintShift;
+        showSuccess(`Día pintado con ${newShiftType}`);
+      }
       
       const updatedDay = {
         ...day,
-        shiftType: selectedPaintShift
+        shiftType: newShiftType
       };
       
       handleDayTap(updatedDay);
@@ -243,7 +267,7 @@ const Index = () => {
       {showPaintToolbar && (
         <div className="bg-blue-600 text-white py-2 px-4 text-center flex justify-between items-center">
           <span className="flex-1 text-sm font-medium">
-            🎨 Pintando: {selectedPaintShift}
+            🎨 Pintando: {selectedPaintShift} - Haz clic nuevamente para revertir
           </span>
           <button
             onClick={finishPaintMode}
