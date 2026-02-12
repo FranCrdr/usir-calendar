@@ -1,6 +1,7 @@
 import React from 'react';
-import { X, Download, Share2, FileText, Calendar, Trash2, Database, Smartphone } from 'lucide-react';
+import { X, Download, Share2, FileText, Calendar, Trash2, Database, Smartphone, FileDown, Clipboard } from 'lucide-react';
 import { saveShiftsToStorage, loadShiftsFromStorage, checkStorageSpace } from '../utils/storage';
+import { generateCalendarSummary, exportAsTextFile } from '../utils/export';
 import { showSuccess, showError } from '../utils/toast';
 
 interface SettingsViewProps {
@@ -39,8 +40,24 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
     }
   };
 
-  const shareAsImage = () => {
-    showSuccess('Función de compartir imagen en desarrollo');
+  const exportAsTextSummary = () => {
+    try {
+      const summary = generateCalendarSummary(shiftDays);
+      exportAsTextFile(summary, `resumen-turnos-${new Date().toISOString().split('T')[0]}.txt`);
+      showSuccess('Resumen generado y descargado');
+    } catch (error) {
+      showError('Error generando resumen');
+    }
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      const summary = generateCalendarSummary(shiftDays);
+      await navigator.clipboard.writeText(summary);
+      showSuccess('Resumen copiado al portapapeles');
+    } catch (error) {
+      showError('Error copiando al portapapeles');
+    }
   };
 
   const clearAllData = () => {
@@ -146,11 +163,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
                 </button>
                 
                 <button
-                  onClick={backupData}
+                  onClick={exportAsTextSummary}
                   className="p-3 border border-gray-200 rounded-lg flex flex-col items-center hover:bg-gray-50 transition-colors"
                 >
-                  <Share2 className="w-6 h-6 text-purple-600 mb-1" />
-                  <span className="text-sm">Backup</span>
+                  <FileDown className="w-6 h-6 text-purple-600 mb-1" />
+                  <span className="text-sm">Resumen</span>
+                </button>
+                
+                <button
+                  onClick={copyToClipboard}
+                  className="p-3 border border-gray-200 rounded-lg flex flex-col items-center hover:bg-gray-50 transition-colors col-span-2"
+                >
+                  <Clipboard className="w-6 h-6 text-orange-600 mb-1" />
+                  <span className="text-sm">Copiar Resumen</span>
                 </button>
               </div>
             </section>
@@ -162,6 +187,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
                 <div className="text-sm text-gray-600 mb-3">
                   <p>Todos los datos se guardan automáticamente en tu dispositivo.</p>
                 </div>
+                
+                <button
+                  onClick={backupData}
+                  className="w-full p-3 border border-blue-200 text-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-50 transition-colors mb-2"
+                >
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Crear Copia de Seguridad
+                </button>
                 
                 <button
                   onClick={clearAllData}
@@ -183,7 +216,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({ shiftDays, onClose }) => {
                 <p>Versión: 2.0.0</p>
                 <p>Datos guardados localmente</p>
                 <p>Compatible con iOS y Android</p>
-                <p>¡Tus datos son privados y nunca salen de tu dispositivo!</p>
+                <p>¡Funciona completamente sin internet!</p>
+                <p>Instálala como app para mejor experiencia</p>
               </div>
             </section>
           </div>

@@ -18,6 +18,39 @@ const Index = () => {
   const [shiftDays, setShiftDays] = useState<ShiftDay[]>([]);
   const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.MORNING);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  // Registrar Service Worker para funcionamiento offline
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('SW registered: ', registration);
+        })
+        .catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
+    }
+
+    // Manejar cambios de conexión
+    const handleOnline = () => {
+      setIsOnline(true);
+      showSuccess('Conexión restaurada');
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      showSuccess('Modo offline activado - La app sigue funcionando');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Cargar datos al iniciar la aplicación
   useEffect(() => {
@@ -135,7 +168,14 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 safe-area-inset-bottom">
       {/* Status Bar Spacer */}
-      <div className="h-[44px] bg-white"></div>
+      <div className="h-[44px] bg-white">
+        {/* Indicador de conexión */}
+        {!isOnline && (
+          <div className="bg-yellow-500 text-white text-xs text-center py-1">
+            🔄 Modo offline - Funcionando sin conexión
+          </div>
+        )}
+      </div>
       
       {/* Main Content */}
       <div className="flex flex-col h-[calc(100vh-44px)]">

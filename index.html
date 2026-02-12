@@ -1,13 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dyad-generated-app</title>
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="description" content="Gestor de turnos para trabajadores - Funciona completamente offline" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Calendario de Turnos</title>
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- PWA Installation Prompt -->
+    <script>
+      // Detectar si el navegador soporta PWA installation
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
   </body>
 </html>
