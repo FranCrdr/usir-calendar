@@ -25,6 +25,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showPaintToolbar, setShowPaintToolbar] = useState(false);
+  const [paintedDays, setPaintedDays] = useState<Record<string, ShiftType>>({});
   
   const { isInstallable, installApp } = usePWA();
 
@@ -149,12 +150,14 @@ const Index = () => {
     setIsTurnosMode(false);
     setIsSettingsMode(false);
     setShowPaintToolbar(false);
+    setPaintedDays({});
   };
 
   const finishPaintMode = () => {
     console.log('Terminando modo pintar...');
     setIsPaintMode(false);
     setShowPaintToolbar(false);
+    setPaintedDays({});
     showSuccess('Modo pintar terminado');
   };
 
@@ -163,16 +166,45 @@ const Index = () => {
     setSelectedPaintShift(shiftType);
     setIsPaintMode(false);
     setShowPaintToolbar(true);
-    showSuccess(`Modo pintar activo: ${shiftType}`);
+    setPaintedDays({});
+    showSuccess(`Modo pintar activo: ${shiftType} - Haz clic nuevamente para deshacer`);
   };
 
   const paintDay = (day: ShiftDay) => {
     if (showPaintToolbar) {
-      console.log('Pintando día:', day.date.toDateString(), 'con turno:', selectedPaintShift);
+      const dateKey = day.date.toDateString();
+      
+      // Verificar si ya fue pintado en esta sesión
+      const wasPaintedThisSession = dateKey in paintedDays;
+      
+      let newShiftType: ShiftType;
+      
+      if (wasPaintedThisSession) {
+        // Segundo clic - revertir al estado original guardado en paintedDays
+        newShiftType = paintedDays[dateKey];
+        
+        // Eliminar del registro
+        const newPaintedDays = { ...paintedDays };
+        delete newPaintedDays[dateKey];
+        setPaintedDays(newPaintedDays);
+        
+        console.log('Deshaciendo pintado:', day.date.toDateString(), '→', newShiftType);
+      } else {
+        // Primer clic - pintar y guardar estado original
+        newShiftType = selectedPaintShift;
+        
+        // Guardar el estado original para poder deshacer
+        setPaintedDays({
+          ...paintedDays,
+          [dateKey]: day.shiftType
+        });
+        
+        console.log('Pintando:', day.date.toDateString(), day.shiftType, '→', newShiftType);
+      }
       
       const updatedDay = {
         ...day,
-        shiftType: selectedPaintShift
+        shiftType: newShiftType
       };
       
       handleDayTap(updatedDay);
@@ -184,6 +216,7 @@ const Index = () => {
     setIsPaintMode(false);
     setIsSettingsMode(false);
     setShowPaintToolbar(false);
+    setPaintedDays({});
   };
 
   const toggleSettingsMode = () => {
@@ -191,6 +224,7 @@ const Index = () => {
     setIsPaintMode(false);
     setIsTurnosMode(false);
     setShowPaintToolbar(false);
+    setPaintedDays({});
   };
 
   useEffect(() => {
@@ -243,7 +277,7 @@ const Index = () => {
       {showPaintToolbar && (
         <div className="bg-blue-600 text-white py-2 px-4 text-center flex justify-between items-center">
           <span className="flex-1 text-sm font-medium">
-            🎨 Pintando: {selectedPaintShift}
+            🎨 Pintando: {selectedPaintShift} - Haz clic nuevamente para deshacer
           </span>
           <button
             onClick={finishPaintMode}
