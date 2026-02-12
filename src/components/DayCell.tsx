@@ -30,7 +30,10 @@ const DayCell: React.FC<DayCellProps> = ({
   const handleTouchStart = () => {
     setIsPressed(true);
     longPressTimer = setTimeout(() => {
-      onLongPress(shiftDay);
+      // Verificar que onLongPress existe antes de llamarla
+      if (onLongPress) {
+        onLongPress(shiftDay);
+      }
       setIsPressed(false);
     }, 500);
   };
@@ -41,9 +44,9 @@ const DayCell: React.FC<DayCellProps> = ({
       clearTimeout(longPressTimer);
       
       // Mostrar selector al tocar rápidamente (no largo press)
-      if (!isPaintMode) {
+      if (!isPaintMode && onTap) {
         setShowSelector(true);
-      } else {
+      } else if (isPaintMode && onTap) {
         onTap(shiftDay);
       }
     }
@@ -56,7 +59,9 @@ const DayCell: React.FC<DayCellProps> = ({
     };
     
     // Actualizar inmediatamente el día seleccionado
-    onTap(updatedDay);
+    if (onTap) {
+      onTap(updatedDay);
+    }
     setShowSelector(false);
   };
 
