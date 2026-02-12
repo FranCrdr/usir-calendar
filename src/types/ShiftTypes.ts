@@ -28,6 +28,7 @@ export interface ShiftDay {
   date: Date;
   shiftType: ShiftType;
   notes: string;
+  previousShiftType?: ShiftType; // Nuevo campo para almacenar el estado anterior
 }
 
 export interface ShiftPattern {

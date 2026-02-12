@@ -1,12 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { Edit3 } from 'lucide-react';
 import { ShiftDay, ShiftType, getShiftColor } from '../types/ShiftTypes';
 
 interface DayCellProps {
   shiftDay: ShiftDay;
   onTap: (day: ShiftDay) => void;
   onLongPress: (day: ShiftDay) => void;
-  onDayNoteTap: (day: ShiftDay) => void;
   isPaintMode: boolean;
   isCurrentMonth: boolean;
 }
@@ -15,7 +13,6 @@ const DayCell: React.FC<DayCellProps> = ({
   shiftDay,
   onTap,
   onLongPress,
-  onDayNoteTap,
   isPaintMode,
   isCurrentMonth
 }) => {
@@ -46,22 +43,14 @@ const DayCell: React.FC<DayCellProps> = ({
       longPressTimerRef.current = null;
     }
     
-    // Clic normal - mostrar selector de turnos o anotación
+    // Clic normal - mostrar selector de turnos
     if (!isPaintMode) {
-      // Verificar si es doble clic para anotación
       setShowSelector(true);
     } else {
       // Modo pintar - aplicar turno directamente
       if (onTap) {
         onTap(shiftDay);
       }
-    }
-  };
-
-  const handleDoubleClick = () => {
-    // Doble clic para añadir anotación
-    if (onDayNoteTap && !isPaintMode) {
-      onDayNoteTap(shiftDay);
     }
   };
 
@@ -92,13 +81,12 @@ const DayCell: React.FC<DayCellProps> = ({
 
   const dayNumber = shiftDay.date.getDate();
   const shiftColor = getShiftColor(shiftDay.shiftType);
-  const hasNotes = shiftDay.notes && shiftDay.notes.trim().length > 0;
-  const shortNote = hasNotes ? shiftDay.notes.substring(0, 20) + (shiftDay.notes.length > 20 ? '...' : '') : '';
+  const hasNotes = shiftDay.notes.trim().length > 0;
 
   return (
     <>
       <div
-        className={`relative aspect-square bg-white cursor-pointer transition-all duration-200 ${isPaintMode ? 'cursor-paint' : ''}`}
+        className={`relative aspect-square bg-white cursor-pointer transition-all duration-200 ${isPaintMode ? 'cursor-paint hover:scale-105 transition-transform' : ''}`}
         onMouseDown={handleTouchStart}
         onMouseUp={handleTouchEnd}
         onMouseLeave={() => {
@@ -110,12 +98,11 @@ const DayCell: React.FC<DayCellProps> = ({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onClick={handleClick}
-        onDoubleClick={handleDoubleClick}
       >
         <div
           className={`h-full flex flex-col items-center justify-center rounded-lg border-2 border-transparent transition-all ${
             shiftColor
-          } ${isCurrentMonth ? 'opacity-100' : 'opacity-50'}`}
+          } ${isCurrentMonth ? 'opacity-100' : 'opacity-50'} ${isPaintMode ? 'hover:border-blue-400' : ''}`}
         >
           {/* Date Number */}
           <div className={`text-xs font-medium absolute top-1 right-1 ${
@@ -131,15 +118,14 @@ const DayCell: React.FC<DayCellProps> = ({
             </div>
           )}
 
-          {/* Notes Indicator and Preview */}
+          {/* Notes Indicator */}
           {hasNotes && (
-            <div className="absolute bottom-0 left-0 right-0 px-1">
-              <div className="bg-black bg-opacity-60 rounded-b-lg px-1 py-px">
-                <p className="text-[10px] text-white text-center font-medium leading-tight truncate">
-                  {shortNote}
-                </p>
-              </div>
-            </div>
+            <div className="absolute bottom-1 left-1 w-1 h-1 bg-blue-500 rounded-full"></div>
+          )}
+
+          {/* Indicador de modo pintar activo */}
+          {isPaintMode && (
+            <div className="absolute top-0 left-0 w-2 h-2 bg-blue-500 rounded-full"></div>
           )}
         </div>
       </div>
@@ -149,7 +135,7 @@ const DayCell: React.FC<DayCellProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl w-full max-w-sm p-4">
             <div className="text-center mb-4">
-              <h3 className="font-semibold">Acciones para el día</h3>
+              <h3 className="font-semibold">Seleccionar Turno</h3>
               <p className="text-sm text-gray-600">
                 {shiftDay.date.toLocaleDateString('es-ES', {
                   weekday: 'long',
@@ -159,20 +145,6 @@ const DayCell: React.FC<DayCellProps> = ({
                 })}
               </p>
             </div>
-
-            {/* Botón para añadir nota */}
-            {onDayNoteTap && (
-              <button
-                onClick={() => {
-                  onDayNoteTap(shiftDay);
-                  setShowSelector(false);
-                }}
-                className="w-full p-3 mb-4 bg-blue-100 text-blue-600 rounded-lg font-medium flex items-center justify-center"
-              >
-                <Edit3 className="w-4 h-4 mr-2" />
-                {hasNotes ? 'Editar Nota' : 'Añadir Nota'}
-              </button>
-            )}
 
             <div className="grid grid-cols-3 gap-2 mb-4">
               {shiftOptions.map(({ type, label, icon }) => (
