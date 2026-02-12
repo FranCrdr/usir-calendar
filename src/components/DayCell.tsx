@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ShiftDay, ShiftType, getShiftColor } from '../types/ShiftTypes';
 
 interface DayCellProps {
@@ -16,8 +16,8 @@ const DayCell: React.FC<DayCellProps> = ({
   isPaintMode,
   isCurrentMonth
 }) => {
-  const [isPressed, setIsPressed] = useState(false);
   const [showSelector, setShowSelector] = useState(false);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const shiftOptions = [
     { type: ShiftType.WORK, label: 'Trabajo', icon: '🛠️' },
@@ -28,25 +28,27 @@ const DayCell: React.FC<DayCellProps> = ({
   ];
 
   const handleTouchStart = () => {
-    setIsPressed(true);
-    longPressTimer = setTimeout(() => {
-      // Verificar que onLongPress existe antes de llamarla
+    longPressTimerRef.current = setTimeout(() => {
+      // Largo press - abrir editor completo
       if (onLongPress) {
         onLongPress(shiftDay);
       }
-      setIsPressed(false);
     }, 500);
   };
 
   const handleTouchEnd = () => {
-    setIsPressed(false);
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      
-      // Mostrar selector al tocar rápidamente (no largo press)
-      if (!isPaintMode && onTap) {
-        setShowSelector(true);
-      } else if (isPaintMode && onTap) {
+    // Limpiar el timer del largo press
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    
+    // Clic normal - mostrar selector de turnos
+    if (!isPaintMode) {
+      setShowSelector(true);
+    } else {
+      // Modo pintar - aplicar turno directamente
+      if (onTap) {
         onTap(shiftDay);
       }
     }
@@ -65,7 +67,17 @@ const DayCell: React.FC<DayCellProps> = ({
     setShowSelector(false);
   };
 
-  let longPressTimer: NodeJS.Timeout;
+  const handleClick = () => {
+    // Manejar click de ratón (solo modo normal)
+    if (!isPaintMode) {
+      setShowSelector(true);
+    } else {
+      // Modo pintar - aplicar turno directamente
+      if (onTap) {
+        onTap(shiftDay);
+      }
+    }
+  };
 
   const dayNumber = shiftDay.date.getDate();
   const shiftColor = getShiftColor(shiftDay.shiftType);
@@ -74,14 +86,18 @@ const DayCell: React.FC<DayCellProps> = ({
   return (
     <>
       <div
-        className={`relative aspect-square bg-white cursor-pointer transition-all duration-200 ${
-          isPressed ? 'scale-95 opacity-80' : ''
-        } ${isPaintMode ? 'cursor-paint' : ''}`}
+        className={`relative aspect-square bg-white cursor-pointer transition-all duration-200 ${isPaintMode ? 'cursor-paint' : ''}`}
         onMouseDown={handleTouchStart}
         onMouseUp={handleTouchEnd}
-        onMouseLeave={() => setIsPressed(false)}
+        onMouseLeave={() => {
+          if (longPressTimerRef.current) {
+            clearTimeout(longPressTimerRef.current);
+            longPressTimerRef.current = null;
+          }
+        }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+        onClick={handleClick}
       >
         <div
           className={`h-full flex flex-col items-center justify-center rounded-lg border-2 border-transparent transition-all ${
