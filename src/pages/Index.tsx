@@ -25,7 +25,6 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [showPaintToolbar, setShowPaintToolbar] = useState(false);
-  const [paintedDays, setPaintedDays] = useState<Record<string, ShiftType>>({});
   
   const { isInstallable, installApp } = usePWA();
 
@@ -92,7 +91,7 @@ const Index = () => {
   }, [shiftDays, isLoading]);
 
   const handleDayTap = (day: ShiftDay) => {
-    console.log('Día actualizado:', day.date.toDateString(), 'Turno:', day.shiftType);
+    console.log('Día actualizado:', day.date.toDateString(), 'Turno:', day.shiftType, 'Notas:', day.notes);
     
     // Crear una nueva lista actualizada de días
     const updatedDays = shiftDays.filter(d => 
@@ -145,54 +144,35 @@ const Index = () => {
   };
 
   const startPaintMode = () => {
+    console.log('Iniciando modo pintar...');
     setIsPaintMode(true);
     setIsTurnosMode(false);
     setIsSettingsMode(false);
     setShowPaintToolbar(false);
-    setPaintedDays({});
   };
 
   const finishPaintMode = () => {
+    console.log('Terminando modo pintar...');
     setIsPaintMode(false);
     setShowPaintToolbar(false);
-    setPaintedDays({});
     showSuccess('Modo pintar terminado');
   };
 
   const handlePaintShiftSelect = (shiftType: ShiftType) => {
+    console.log('Seleccionado turno para pintar:', shiftType);
     setSelectedPaintShift(shiftType);
     setIsPaintMode(false);
     setShowPaintToolbar(true);
-    setPaintedDays({});
     showSuccess(`Modo pintar activo: ${shiftType}`);
   };
 
   const paintDay = (day: ShiftDay) => {
     if (showPaintToolbar) {
-      const dateKey = day.date.toDateString();
-      const currentShiftType = day.shiftType;
-      
-      const wasPreviouslyPainted = dateKey in paintedDays;
-      
-      let newShiftType: ShiftType;
-      
-      if (wasPreviouslyPainted) {
-        newShiftType = paintedDays[dateKey];
-        const newPaintedDays = { ...paintedDays };
-        delete newPaintedDays[dateKey];
-        setPaintedDays(newPaintedDays);
-      } else {
-        setPaintedDays({
-          ...paintedDays,
-          [dateKey]: currentShiftType
-        });
-        newShiftType = selectedPaintShift;
-      }
+      console.log('Pintando día:', day.date.toDateString(), 'con turno:', selectedPaintShift);
       
       const updatedDay = {
         ...day,
-        shiftType: newShiftType,
-        previousShiftType: wasPreviouslyPainted ? currentShiftType : day.previousShiftType
+        shiftType: selectedPaintShift
       };
       
       handleDayTap(updatedDay);
@@ -259,10 +239,11 @@ const Index = () => {
         )}
       </div>
       
+      {/* Barra de pintar activa */}
       {showPaintToolbar && (
         <div className="bg-blue-600 text-white py-2 px-4 text-center flex justify-between items-center">
           <span className="flex-1 text-sm font-medium">
-            🎨 Pintando: {selectedPaintShift} - Haz clic nuevamente para revertir
+            🎨 Pintando: {selectedPaintShift}
           </span>
           <button
             onClick={finishPaintMode}
@@ -273,6 +254,7 @@ const Index = () => {
         </div>
       )}
       
+      {/* Main Content */}
       <div className={`flex flex-col ${showPaintToolbar ? 'h-[calc(100vh-44px-40px)]' : 'h-[calc(100vh-44px)]'}`}>
         <CalendarView
           currentDate={currentDate}
@@ -284,6 +266,7 @@ const Index = () => {
           isPaintMode={showPaintToolbar}
         />
 
+        {/* Bottom Toolbar */}
         <div className="bg-white border-t border-gray-200 py-3 px-4 safe-area-inset-bottom">
           <div className="flex justify-between items-center max-w-md mx-auto">
             <button
@@ -319,6 +302,7 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Modal Overlays */}
       {isEditMode && selectedDay && (
         <ShiftEditor
           shiftDay={selectedDay}
