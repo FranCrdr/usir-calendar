@@ -21,6 +21,7 @@ const Index = () => {
   const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.WORK);
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [showPaintToolbar, setShowPaintToolbar] = useState(false);
   
   const { isInstallable, installApp } = usePWA();
 
@@ -98,7 +99,11 @@ const Index = () => {
     updatedDays.push(day);
     
     setShiftDays(updatedDays);
-    showSuccess(`Turno ${day.shiftType} asignado al día ${day.date.getDate()}`);
+    
+    // Solo mostrar notificación si no estamos en modo pintar continuo
+    if (!showPaintToolbar) {
+      showSuccess(`Turno ${day.shiftType} asignado al día ${day.date.getDate()}`);
+    }
   };
 
   const handleDayLongPress = (day: ShiftDay) => {
@@ -117,13 +122,33 @@ const Index = () => {
     showSuccess(`Turno actualizado para el ${updatedDay.date.toLocaleDateString()}`);
   };
 
-  const togglePaintMode = () => {
-    setIsPaintMode(!isPaintMode);
+  const startPaintMode = () => {
+    setIsPaintMode(true);
     setIsTurnosMode(false);
     setIsSettingsMode(false);
-    
-    if (!isPaintMode) {
-      showSuccess('Modo pintar activado - Selecciona un turno y toca días');
+    setShowPaintToolbar(false);
+  };
+
+  const finishPaintMode = () => {
+    setIsPaintMode(false);
+    setShowPaintToolbar(false);
+    showSuccess('Modo pintar terminado');
+  };
+
+  const handlePaintShiftSelect = (shiftType: ShiftType) => {
+    setSelectedPaintShift(shiftType);
+    setIsPaintMode(false); // Cierra la ventana de selección
+    setShowPaintToolbar(true); // Muestra la barra de pintar activa
+    showSuccess(`Modo pintar activo: ${shiftType}`);
+  };
+
+  const paintDay = (day: ShiftDay) => {
+    if (showPaintToolbar) {
+      const updatedDay = {
+        ...day,
+        shiftType: selectedPaintShift
+      };
+      handleDayTap(updatedDay);
     }
   };
 
@@ -131,12 +156,14 @@ const Index = () => {
     setIsTurnosMode(!isTurnosMode);
     setIsPaintMode(false);
     setIsSettingsMode(false);
+    setShowPaintToolbar(false);
   };
 
   const toggleSettingsMode = () => {
     setIsSettingsMode(!isSettingsMode);
     setIsPaintMode(false);
     setIsTurnosMode(false);
+    setShowPaintToolbar(false);
   };
 
   // Manejar cierre/refresh de la página
@@ -189,24 +216,39 @@ const Index = () => {
         )}
       </div>
       
+      {/* Barra de pintar activa */}
+      {showPaintToolbar && (
+        <div className="bg-blue-600 text-white py-2 px-4 text-center flex justify-between items-center">
+          <span className="flex-1 text-sm font-medium">
+            🎨 Pintando: {selectedPaintShift}
+          </span>
+          <button
+            onClick={finishPaintMode}
+            className="bg-white text-blue-600 px-4 py-1 rounded-full text-sm font-medium"
+          >
+            Terminar (X)
+          </button>
+        </div>
+      )}
+      
       {/* Main Content */}
-      <div className="flex flex-col h-[calc(100vh-44px)]">
+      <div className={`flex flex-col ${showPaintToolbar ? 'h-[calc(100vh-44px-40px)]' : 'h-[calc(100vh-44px)]'}`}>
         <CalendarView
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
           shiftDays={shiftDays}
-          onDayTap={handleDayTap}
+          onDayTap={showPaintToolbar ? paintDay : handleDayTap}
           onLongPress={handleDayLongPress}
-          isPaintMode={isPaintMode}
+          isPaintMode={showPaintToolbar}
         />
 
         {/* Bottom Toolbar */}
         <div className="bg-white border-t border-gray-200 py-3 px-4 safe-area-inset-bottom">
           <div className="flex justify-between items-center max-w-md mx-auto">
             <button
-              onClick={togglePaintMode}
+              onClick={startPaintMode}
               className={`flex-1 flex flex-col items-center justify-center py-2 rounded-lg transition-colors ${
-                isPaintMode ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
+                isPaintMode || showPaintToolbar ? 'bg-blue-100 text-blue-600' : 'text-gray-600'
               }`}
             >
               <span className="text-lg">🎨</span>
@@ -248,7 +290,7 @@ const Index = () => {
       {isPaintMode && (
         <PaintModeView
           selectedShift={selectedPaintShift}
-          onSelectShift={setSelectedPaintShift}
+          onSelectShift={handlePaintShiftSelect}
           onClose={() => setIsPaintMode(false)}
         />
       )}

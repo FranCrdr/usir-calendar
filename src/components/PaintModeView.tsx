@@ -21,6 +21,12 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
     { type: ShiftType.IMAGINARY, label: 'Imaginaria', icon: '✨', description: 'Turno imaginaria' }
   ];
 
+  const handleShiftSelect = (shiftType: ShiftType) => {
+    onSelectShift(shiftType);
+    // Se cierra automáticamente después de seleccionar
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center p-4 z-50">
       <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden">
@@ -41,14 +47,15 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
         {/* Content */}
         <div className="p-4">
           <p className="text-sm text-gray-600 mb-4">
-            Selecciona un tipo de turno y toca los días del calendario para aplicarlo rápidamente.
+            Selecciona un tipo de turno y podrás pintar días directamente en el calendario.
+            La ventana se cerrará automáticamente y aparecerá una barra con "X" para terminar.
           </p>
 
           <div className="grid grid-cols-2 gap-3">
             {shiftOptions.map((option) => (
               <button
                 key={option.type}
-                onClick={() => onSelectShift(option.type)}
+                onClick={() => handleShiftSelect(option.type)}
                 className={`p-4 rounded-lg text-center transition-all min-h-[100px] ${
                   getShiftColor(option.type)
                 } ${
@@ -63,12 +70,6 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
                 <div className="text-sm opacity-80">{option.label}</div>
               </button>
             ))}
-          </div>
-
-          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-            <p className="text-blue-600 text-sm text-center">
-              Turno seleccionado: {shiftOptions.find(o => o.type === selectedShift)?.label}
-            </p>
           </div>
         </div>
       </div>
