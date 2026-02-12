@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Download } from 'lucide-react';
 import CalendarView from '../components/CalendarView';
 import ShiftEditor from '../components/ShiftEditor';
+import NoteModal from '../components/NoteModal';
 import PaintModeView from '../components/PaintModeView';
 import TurnosView from '../components/TurnosView';
 import SettingsView from '../components/SettingsView';
@@ -13,7 +14,9 @@ import { usePWA } from '../hooks/usePWA';
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<ShiftDay | null>(null);
+  const [dayForNote, setDayForNote] = useState<ShiftDay | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isNoteMode, setIsNoteMode] = useState(false);
   const [isPaintMode, setIsPaintMode] = useState(false);
   const [isTurnosMode, setIsTurnosMode] = useState(false);
   const [isSettingsMode, setIsSettingsMode] = useState(false);
@@ -112,6 +115,12 @@ const Index = () => {
     setIsEditMode(true);
   };
 
+  const handleDayNoteTap = (day: ShiftDay) => {
+    console.log('Toque para anotación en día:', day.date.toDateString());
+    setDayForNote(day);
+    setIsNoteMode(true);
+  };
+
   const updateShiftDay = (updatedDay: ShiftDay) => {
     const updatedDays = shiftDays.map(d => 
       d.date.toDateString() === updatedDay.date.toDateString() ? updatedDay : d
@@ -120,6 +129,16 @@ const Index = () => {
     setShiftDays(updatedDays);
     setIsEditMode(false);
     showSuccess(`Turno actualizado para el ${updatedDay.date.toLocaleDateString()}`);
+  };
+
+  const updateNote = (day: ShiftDay, note: string) => {
+    const updatedDays = shiftDays.map(d => 
+      d.date.toDateString() === day.date.toDateString() ? { ...d, notes: note } : d
+    );
+    
+    setShiftDays(updatedDays);
+    setIsNoteMode(false);
+    showSuccess(`Nota actualizada para el ${day.date.toLocaleDateString()}`);
   };
 
   const startPaintMode = () => {
@@ -239,6 +258,7 @@ const Index = () => {
           shiftDays={shiftDays}
           onDayTap={showPaintToolbar ? paintDay : handleDayTap}
           onLongPress={handleDayLongPress}
+          onDayNoteTap={handleDayNoteTap}
           isPaintMode={showPaintToolbar}
         />
 
@@ -284,6 +304,14 @@ const Index = () => {
           shiftDay={selectedDay}
           onSave={updateShiftDay}
           onClose={() => setIsEditMode(false)}
+        />
+      )}
+
+      {isNoteMode && dayForNote && (
+        <NoteModal
+          shiftDay={dayForNote}
+          onSave={(note) => updateNote(dayForNote, note)}
+          onClose={() => setIsNoteMode(false)}
         />
       )}
 

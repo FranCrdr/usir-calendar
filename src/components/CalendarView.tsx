@@ -8,7 +8,8 @@ interface CalendarViewProps {
   setCurrentDate: (date: Date) => void;
   shiftDays: ShiftDay[];
   onDayTap: (day: ShiftDay) => void;
-  onDayLongPress: (day: ShiftDay) => void;
+  onLongPress: (day: ShiftDay) => void;
+  onDayNoteTap: (day: ShiftDay) => void;
   isPaintMode: boolean;
 }
 
@@ -17,7 +18,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   setCurrentDate,
   shiftDays,
   onDayTap,
-  onDayLongPress,
+  onLongPress,
+  onDayNoteTap,
   isPaintMode
 }) => {
   const daysOfWeek = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
@@ -122,7 +124,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             key={`${date.toISOString()}-${index}`}
             shiftDay={getShiftForDate(date)}
             onTap={onDayTap}
-            onLongPress={onDayLongPress}
+            onLongPress={onLongPress}
+            onDayNoteTap={onDayNoteTap}
             isPaintMode={isPaintMode}
             isCurrentMonth={date.getMonth() === currentDate.getMonth()}
           />
