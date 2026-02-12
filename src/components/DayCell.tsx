@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Edit3 } from 'lucide-react';
 import { ShiftDay, ShiftType, getShiftColor } from '../types/ShiftTypes';
 
 interface DayCellProps {
