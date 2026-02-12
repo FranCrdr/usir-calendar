@@ -14,10 +14,20 @@ const NoteModal: React.FC<NoteModalProps> = ({ shiftDay, onSave, onClose }) => {
 
   useEffect(() => {
     setNote(shiftDay.notes || '');
-  }, [shiftDay]);
+    setIsEditing(!shiftDay.notes || note === '');
+  }, [shiftDay, note]);
 
   const handleSave = () => {
-    onSave(note);
+    if (onSave) {
+      onSave(note.trim());
+    }
+    onClose();
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      handleSave();
+    }
   };
 
   const formatDate = (date: Date) => {
@@ -68,6 +78,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ shiftDay, onSave, onClose }) => {
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
+                onKeyDown={handleKeyPress}
                 placeholder="Añade notas para este día (cumpleaños, eventos importantes, recordatorios...)"
                 className="w-full p-3 border border-gray-300 rounded-lg resize-none"
                 rows={4}

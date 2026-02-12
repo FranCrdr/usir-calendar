@@ -37,6 +37,7 @@ const DayCell: React.FC<DayCellProps> = ({
       if (onLongPress) {
         onLongPress(shiftDay);
       }
+      setShowSelector(false); // Asegurar que el selector no se muestre simultáneamente
     }, 500);
   };
 
@@ -56,7 +57,7 @@ const DayCell: React.FC<DayCellProps> = ({
     // Para clics normales, mostrar el selector después de un breve retraso
     clickTimerRef.current = setTimeout(() => {
       setShowSelector(true);
-    }, 100);
+    }, 150);
   };
 
   const handleShiftSelect = (shiftType: ShiftType) => {
@@ -85,9 +86,8 @@ const DayCell: React.FC<DayCellProps> = ({
       clickTimerRef.current = null;
     }
     
-    if (isPaintMode && onTap) {
-      onTap(shiftDay);
-    } else {
+    // Doble clic rápido para abrir directamente notas
+    if (!isPaintMode) {
       setShowSelector(true);
     }
   };
@@ -113,7 +113,7 @@ const DayCell: React.FC<DayCellProps> = ({
   return (
     <>
       <div
-        className={`relative aspect-square bg-white cursor-pointer transition-all duration-200 ${isPaintMode ? 'cursor-paint hover:scale-105 transition-transform' : ''}`}
+        className={`relative aspect-square bg-white cursor-pointer transition-all duration-200 ${isPaintMode ? 'cursor-paint hover:scale-105 transition-transform' : 'hover:bg-gray-50'}`}
         onMouseDown={handleTouchStart}
         onMouseUp={handleTouchEnd}
         onMouseLeave={() => {

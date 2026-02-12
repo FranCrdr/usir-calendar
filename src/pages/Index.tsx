@@ -124,12 +124,15 @@ const Index = () => {
   const updateNote = (note: string) => {
     if (!dayForNote) return;
     
+    console.log('Actualizando nota para:', dayForNote.date.toDateString(), 'Nota:', note);
+    
     const updatedDays = shiftDays.map(d => 
       d.date.toDateString() === dayForNote.date.toDateString() ? { ...d, notes: note } : d
     );
     
     setShiftDays(updatedDays);
     setIsNoteMode(false);
+    setDayForNote(null);
   };
 
   const startPaintMode = () => {
