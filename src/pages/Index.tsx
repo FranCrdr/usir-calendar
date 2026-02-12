@@ -74,23 +74,23 @@ const Index = () => {
     initializeApp();
   }, []);
 
-  // Guardar automáticamente cuando cambien los turnos (con debounce mejorado)
+  // Guardar automáticamente cuando cambien los turnos
   useEffect(() => {
     if (!isLoading && shiftDays.length > 0) {
       const timer = setTimeout(() => {
         console.log('Guardando cambios...', shiftDays.length, 'turnos');
         saveShiftsToStorage(shiftDays);
-      }, 300); // Debounce más rápido para mejor experiencia
+      }, 300);
       
       return () => clearTimeout(timer);
     }
   }, [shiftDays, isLoading]);
 
   const handleDayTap = (day: ShiftDay) => {
-    console.log('Día tocado:', day.date.toDateString());
+    console.log('Día actualizado:', day.date.toDateString());
     
+    // Si estamos en modo pintar, usar la funcionalidad original
     if (isPaintMode) {
-      // Paint mode: apply selected shift directly
       const updatedDays = shiftDays.map(d => 
         d.date.toDateString() === day.date.toDateString() 
           ? { ...d, shiftType: selectedPaintShift }
@@ -102,9 +102,13 @@ const Index = () => {
       return;
     }
 
-    // Normal mode: open editor for detailed editing
-    setSelectedDay(day);
-    setIsEditMode(true);
+    // Si recibimos un día actualizado (desde el selector), actualizar la lista
+    const updatedDays = shiftDays.map(d => 
+      d.date.toDateString() === day.date.toDateString() ? day : d
+    );
+    
+    setShiftDays(updatedDays);
+    showSuccess(`Turno ${day.shiftType} asignado al día ${day.date.getDate()}`);
   };
 
   const handleDayLongPress = (day: ShiftDay) => {
@@ -202,7 +206,7 @@ const Index = () => {
           setCurrentDate={setCurrentDate}
           shiftDays={shiftDays}
           onDayTap={handleDayTap}
-          onDayLongPress={handleDayLongPress}
+          onLongPress={handleDayLongPress}
           isPaintMode={isPaintMode}
         />
 
