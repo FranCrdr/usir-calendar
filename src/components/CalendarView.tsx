@@ -122,7 +122,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             key={`${date.toISOString()}-${index}`}
             shiftDay={getShiftForDate(date)}
             onTap={onDayTap}
-            onLongPress={onLongPress}
+            onLongPress={onDayLongPress}
             isPaintMode={isPaintMode}
             isCurrentMonth={date.getMonth() === currentDate.getMonth()}
           />
