@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Calendar, Trash2 } from 'lucide-react';
-import { ShiftType, ShiftPattern } from '../types/ShiftTypes';
+import { ShiftType, ShiftPattern, getShiftColor } from '../types/ShiftTypes';
 import { loadPatternsFromStorage, savePatternsToStorage } from '../utils/storage';
 import { showSuccess, showError } from '../utils/toast';
 
@@ -215,24 +215,6 @@ const TurnosView: React.FC<TurnosViewProps> = ({ shiftDays, setShiftDays, onClos
       </div>
     </div>
   );
-};
-
-// Helper function for shift colors
-const getShiftColor = (shiftType: ShiftType): string => {
-  switch (shiftType) {
-    case ShiftType.WORK:
-      return "bg-red-200 text-red-800";
-    case ShiftType.FREE:
-      return "bg-green-200 text-green-800";
-    case ShiftType.REINFORCEMENT:
-      return "bg-emerald-600 text-white";
-    case ShiftType.ALERT:
-      return "bg-purple-200 text-purple-800";
-    case ShiftType.IMAGINARY:
-      return "bg-yellow-200 text-yellow-800";
-    default:
-      return "bg-gray-50 text-gray-400";
-  }
 };
 
 export default TurnosView;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShiftDay, getShiftColor } from '../types/ShiftTypes';
+import { ShiftDay, ShiftType, getShiftColor } from '../types/ShiftTypes';
 
 interface DayCellProps {
   shiftDay: ShiftDay;
