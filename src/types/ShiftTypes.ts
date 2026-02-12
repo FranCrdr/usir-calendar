@@ -9,11 +9,11 @@ export enum ShiftType {
 export const getShiftColor = (shiftType: ShiftType): string => {
   switch (shiftType) {
     case ShiftType.WORK:
-      return "bg-red-200 text-red-800 border-red-300";
+      return "bg-red-600 text-white border-red-700";
     case ShiftType.FREE:
       return "bg-green-200 text-green-800 border-green-300";
     case ShiftType.REINFORCEMENT:
-      return "bg-emerald-600 text-white border-emerald-700";
+      return "bg-orange-300 text-orange-800 border-orange-400";
     case ShiftType.ALERT:
       return "bg-purple-200 text-purple-800 border-purple-300";
     case ShiftType.IMAGINARY:
