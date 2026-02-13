@@ -1,15 +1,14 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ShiftDay, ShiftType, getShiftColor } from '../types/ShiftTypes';
+import { ShiftDay } from '../types/ShiftTypes';
 import DayCell from './DayCell';
 
 interface CalendarViewProps {
   currentDate: Date;
   setCurrentDate: (date: Date) => void;
   shiftDays: ShiftDay[];
-  onDayTap: (day: ShiftDay) => void;
-  onLongPress: (day: ShiftDay) => void;
-  onDayNoteTap: (day: ShiftDay) => void;
+  onDayClick: (day: ShiftDay) => void;
+  onNoteClick: (day: ShiftDay) => void;
   isPaintMode: boolean;
 }
 
@@ -17,9 +16,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   currentDate,
   setCurrentDate,
   shiftDays,
-  onDayTap,
-  onLongPress,
-  onDayNoteTap,
+  onDayClick,
+  onNoteClick,
   isPaintMode
 }) => {
   const daysOfWeek = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
@@ -36,17 +34,16 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
 
-    // Adjust for Monday as first day
     const adjustedStart = startingDayOfWeek === 0 ? 6 : startingDayOfWeek - 1;
 
     const days: Date[] = [];
 
-    // Add empty days from previous month
+    // Días del mes anterior
     for (let i = 0; i < adjustedStart; i++) {
       days.push(new Date(year, month, -i));
     }
 
-    // Add days of current month
+    // Días del mes actual
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(new Date(year, month, i));
     }
@@ -69,12 +66,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       day.date.toDateString() === date.toDateString()
     );
     
-    if (existing) return existing;
-
-    return {
+    return existing || {
       id: date.toISOString(),
       date,
-      shiftType: ShiftType.FREE,
+      shiftType: 'L',
       notes: ''
     };
   };
@@ -83,31 +78,25 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   return (
     <div className="flex-1 bg-white">
-      {/* Header */}
+      {/* Header del calendario */}
       <div className="py-4 px-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => navigateMonth('prev')}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
+          <button onClick={() => navigateMonth('prev')} className="p-2 hover:bg-gray-100 rounded">
+            <ChevronLeft className="w-5 h-5" />
           </button>
           
           <div className="text-center">
-            <h1 className="text-xl font-semibold text-gray-800">
+            <h1 className="text-xl font-semibold">
               {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
             </h1>
           </div>
           
-          <button
-            onClick={() => navigateMonth('next')}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-          >
-            <ChevronRight className="w-5 h-5 text-gray-600" />
+          <button onClick={() => navigateMonth('next')} className="p-2 hover:bg-gray-100 rounded">
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Days of Week Header */}
+        {/* Días de la semana */}
         <div className="grid grid-cols-7 mt-4">
           {daysOfWeek.map(day => (
             <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
@@ -117,28 +106,19 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
       </div>
 
-      {/* Calendar Grid - Removed padding to maximize space */}
+      {/* Grid de días */}
       <div className="grid grid-cols-7 gap-px bg-gray-200">
         {days.map((date, index) => (
           <DayCell
             key={`${date.toISOString()}-${index}`}
             shiftDay={getShiftForDate(date)}
-            onTap={onDayTap}
-            onLongPress={onLongPress}
-            onDayNoteTap={onDayNoteTap}
+            onDayClick={onDayClick}
+            onNoteClick={onNoteClick}
             isPaintMode={isPaintMode}
             isCurrentMonth={date.getMonth() === currentDate.getMonth()}
           />
         ))}
       </div>
-
-      {isPaintMode && (
-        <div className="bg-blue-50 py-2 px-4">
-          <p className="text-blue-600 text-sm text-center">
-            Modo pintar activo. Selecciona un turno y toca los días para aplicarlo rápidamente.
-          </p>
-        </div>
-      )}
     </div>
   );
 };
