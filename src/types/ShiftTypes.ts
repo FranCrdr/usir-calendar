@@ -17,3 +17,6 @@ export interface ShiftDay {
   shiftType: ShiftType;
   notes: string;
 }
+
+// Export individual named exports
+export { ShiftType, ShiftDay, getShiftColor };

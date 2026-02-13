@@ -9,7 +9,7 @@ const Index = () => {
   const [shiftDays, setShiftDays] = useState<ShiftDay[]>([]);
   const [noteModalDay, setNoteModalDay] = useState<ShiftDay | null>(null);
   const [isPaintMode, setIsPaintMode] = useState(false);
-  const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.WORK);
+  const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.L);
 
   // Cargar datos
   useEffect(() => {
