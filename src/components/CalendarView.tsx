@@ -38,9 +38,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
     const days: Date[] = [];
 
-    // Días del mes anterior
-    for (let i = 0; i < adjustedStart; i++) {
-      days.push(new Date(year, month, -i));
+    // Días del mes anterior (en orden correcto: del último día hacia atrás)
+    if (adjustedStart > 0) {
+      const previousMonthLastDay = new Date(year, month, 0).getDate();
+      for (let i = adjustedStart; i > 0; i--) {
+        days.push(new Date(year, month - 1, previousMonthLastDay - i + 1));
+      }
     }
 
     // Días del mes actual
