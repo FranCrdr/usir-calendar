@@ -1,7 +1,6 @@
 import { ShiftDay } from '../types/ShiftTypes';
 
 const SHIFTS_STORAGE_KEY = 'shift_calendar_data_v2';
-const PATTERNS_STORAGE_KEY = 'shift_patterns_data_v2';
 const SETTINGS_STORAGE_KEY = 'shift_settings_data_v2';
 
 // Mejorar el manejo de errores y versionado
@@ -64,33 +63,6 @@ export const loadShiftsFromStorage = (): ShiftDay[] => {
     console.error('Error cargando turnos:', error);
     // Limpiar datos corruptos
     localStorage.removeItem(SHIFTS_STORAGE_KEY);
-    return [];
-  }
-};
-
-export const savePatternsToStorage = (patterns: any[]): void => {
-  try {
-    const dataToSave = {
-      version: '2.0',
-      lastSaved: new Date().toISOString(),
-      data: patterns
-    };
-    localStorage.setItem(PATTERNS_STORAGE_KEY, JSON.stringify(dataToSave));
-  } catch (error) {
-    console.error('Error guardando patrones:', error);
-  }
-};
-
-export const loadPatternsFromStorage = (): any[] => {
-  try {
-    const stored = localStorage.getItem(PATTERNS_STORAGE_KEY);
-    if (!stored) return [];
-    
-    const parsed = JSON.parse(stored);
-    return parsed.data && parsed.version ? parsed.data : parsed;
-  } catch (error) {
-    console.error('Error cargando patrones:', error);
-    localStorage.removeItem(PATTERNS_STORAGE_KEY);
     return [];
   }
 };

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Calendar } from 'lucide-react';
+import { Palette } from 'lucide-react';
 import CalendarView from '../components/CalendarView';
 import ShiftEditor from '../components/ShiftEditor';
 import NoteModal from '../components/NoteModal';
 import PaintModeView from '../components/PaintModeView';
-import TurnosView from '../components/TurnosView';
 import { ShiftType, ShiftDay } from '../types/ShiftTypes';
 import { saveShiftsToStorage, loadShiftsFromStorage } from '../utils/storage';
 import { usePWA } from '../hooks/usePWA';
@@ -15,7 +14,6 @@ const Index = () => {
   const [shiftEditorDay, setShiftEditorDay] = useState<ShiftDay | null>(null);
   const [noteModalDay, setNoteModalDay] = useState<ShiftDay | null>(null);
   const [paintModeViewOpen, setPaintModeViewOpen] = useState(false);
-  const [turnosViewOpen, setTurnosViewOpen] = useState(false);
   const [isPaintMode, setIsPaintMode] = useState(false);
   const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.FREE);
 
@@ -133,19 +131,9 @@ const Index = () => {
         />
       </div>
 
-      {/* Barra de acciones inferior */}
+      {/* Barra de acciones inferior - simplificada */}
       <div className="bg-white border-t border-gray-200 py-3 px-4">
-        <div className="flex justify-around items-center">
-          {/* Botón Turnos */}
-          <button
-            onClick={() => setTurnosViewOpen(true)}
-            className="flex flex-col items-center text-gray-600 hover:text-green-600 transition-colors"
-            title="Gestión de Turnos"
-          >
-            <Calendar className="w-6 h-6 mb-1" />
-            <span className="text-xs">Turnos</span>
-          </button>
-
+        <div className="flex justify-center items-center">
           {/* Botón Modo Pintura */}
           <button
             onClick={togglePaintMode}
@@ -192,14 +180,6 @@ const Index = () => {
           selectedShift={selectedPaintShift}
           onSelectShift={handleSelectPaintShift}
           onClose={() => setPaintModeViewOpen(false)}
-        />
-      )}
-
-      {turnosViewOpen && (
-        <TurnosView
-          shiftDays={shiftDays}
-          setShiftDays={setShiftDays}
-          onClose={() => setTurnosViewOpen(false)}
         />
       )}
     </div>
