@@ -19,7 +19,7 @@ const Index = () => {
   const [settingsViewOpen, setSettingsViewOpen] = useState(false);
   const [turnosViewOpen, setTurnosViewOpen] = useState(false);
   const [isPaintMode, setIsPaintMode] = useState(false);
-  const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>("L");
+  const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.FREE);
 
   const { isInstallable, installApp } = usePWA();
 
@@ -115,10 +115,10 @@ const Index = () => {
       <div className="bg-white border-b border-gray-200 py-3 px-4">
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">
-            {shiftDays.filter(d => d.shiftType !== 'L').length} días trabajados
+            {shiftDays.filter(d => d.shiftType !== ShiftType.FREE).length} días trabajados
           </span>
           <span className="text-gray-600">
-            {shiftDays.filter(d => d.shiftType === 'L').length} días libres
+            {shiftDays.filter(d => d.shiftType === ShiftType.FREE).length} días libres
           </span>
         </div>
       </div>

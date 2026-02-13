@@ -1,19 +1,22 @@
-// Definiciones de tipos básicos
-export type ShiftType = "T" | "L" | "R" | "A" | "I";
+export enum ShiftType {
+  WORK = "T",
+  FREE = "L", 
+  REINFORCEMENT = "R",
+  ALERT = "A",
+  IMAGINARY = "I"
+}
 
-// Función para obtener colores
 export function getShiftColor(shiftType: ShiftType): string {
   switch (shiftType) {
-    case "T": return "bg-red-600 text-white";
-    case "L": return "bg-green-200 text-green-800";
-    case "R": return "bg-orange-300 text-orange-800";
-    case "A": return "bg-purple-200 text-purple-800";
-    case "I": return "bg-yellow-200 text-yellow-800";
+    case ShiftType.WORK: return "bg-red-600 text-white";
+    case ShiftType.FREE: return "bg-green-200 text-green-800";
+    case ShiftType.REINFORCEMENT: return "bg-orange-300 text-orange-800";
+    case ShiftType.ALERT: return "bg-purple-200 text-purple-800";
+    case ShiftType.IMAGINARY: return "bg-yellow-200 text-yellow-800";
     default: return "bg-gray-100 text-gray-500";
   }
 }
 
-// Interface para días de turno
 export interface ShiftDay {
   id: string;
   date: Date;
@@ -21,7 +24,6 @@ export interface ShiftDay {
   notes: string;
 }
 
-// Interface para patrones de turno
 export interface ShiftPattern {
   id: string;
   name: string;

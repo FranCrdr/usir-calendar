@@ -1,4 +1,4 @@
-import { ShiftDay } from '../types/ShiftTypes';
+import { ShiftDay, ShiftType } from '../types/ShiftTypes';
 
 export const generateCalendarSummary = (shiftDays: ShiftDay[]): string => {
   const summary: string[] = [];
@@ -56,13 +56,13 @@ export const generateCalendarSummary = (shiftDays: ShiftDay[]): string => {
   return summary.join('\n');
 };
 
-const getShiftLabel = (shiftType: string): string => {
+const getShiftLabel = (shiftType: ShiftType): string => {
   switch (shiftType) {
-    case 'T': return 'Trabajo';
-    case 'L': return 'Libre';
-    case 'R': return 'Refuerzo';
-    case 'A': return 'Alerta';
-    case 'I': return 'Imaginaria';
+    case ShiftType.WORK: return 'Trabajo';
+    case ShiftType.FREE: return 'Libre';
+    case ShiftType.REINFORCEMENT: return 'Refuerzo';
+    case ShiftType.ALERT: return 'Alerta';
+    case ShiftType.IMAGINARY: return 'Imaginaria';
     default: return '';
   }
 };
