@@ -65,12 +65,14 @@ const DayCell: React.FC<DayCellProps> = ({
           <div className="text-sm font-bold">{shiftDay.shiftType}</div>
         )}
 
-        {/* Indicador de nota */}
+        {/* Indicador de nota - Mejorado para mostrar más texto */}
         {hasNotes && (
-          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 rounded-b-lg px-1 py-0.5">
-            <p className="text-[10px] text-white text-center truncate">
-              {shiftDay.notes.substring(0, 20)}{shiftDay.notes.length > 20 ? '...' : ''}
-            </p>
+          <div className="absolute inset-1 bg-white bg-opacity-90 rounded-md border border-gray-300 p-1 flex flex-col">
+            <div className="flex-1 overflow-hidden">
+              <p className="text-[9px] text-gray-800 leading-tight break-words max-h-full overflow-hidden">
+                {shiftDay.notes}
+              </p>
+            </div>
           </div>
         )}
       </div>
