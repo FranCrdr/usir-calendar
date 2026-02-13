@@ -44,6 +44,12 @@ const DayCell: React.FC<DayCellProps> = ({
   const shiftColor = getShiftColor(shiftDay.shiftType);
   const hasNotes = shiftDay.notes && shiftDay.notes.trim().length > 0;
 
+  // Función para truncar el texto si es muy largo
+  const truncateNote = (text: string, maxLength: number = 80) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
   return (
     <div
       className={`relative aspect-square bg-white cursor-pointer transition-all ${
@@ -65,12 +71,12 @@ const DayCell: React.FC<DayCellProps> = ({
           <div className="text-sm font-bold">{shiftDay.shiftType}</div>
         )}
 
-        {/* Indicador de nota - Mejorado para mostrar más texto */}
+        {/* Indicador de nota - Mejorado para mostrar texto con truncado */}
         {hasNotes && (
           <div className="absolute inset-1 bg-white bg-opacity-90 rounded-md border border-gray-300 p-1 flex flex-col">
             <div className="flex-1 overflow-hidden">
               <p className="text-[9px] text-gray-800 leading-tight break-words max-h-full overflow-hidden">
-                {shiftDay.notes}
+                {truncateNote(shiftDay.notes)}
               </p>
             </div>
           </div>
