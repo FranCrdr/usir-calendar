@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Palette } from 'lucide-react';
+import { Palette, Download, Upload, RotateCcw } from 'lucide-react';
 import CalendarView from '../components/CalendarView';
 import ShiftEditor from '../components/ShiftEditor';
 import NoteModal from '../components/NoteModal';
@@ -7,6 +7,7 @@ import PaintModeView from '../components/PaintModeView';
 import { ShiftType, ShiftDay } from '../types/ShiftTypes';
 import { saveShiftsToStorage, loadShiftsFromStorage } from '../utils/storage';
 import { usePWA } from '../hooks/usePWA';
+import { showSuccess, showError } from '../utils/toast';
 
 const Index = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -79,6 +80,7 @@ const Index = () => {
       setPaintModeViewOpen(true);
     } else {
       setIsPaintMode(false);
+      showSuccess('Modo pintura desactivado');
     }
   };
 
@@ -87,6 +89,16 @@ const Index = () => {
     setSelectedPaintShift(shiftType);
     setIsPaintMode(true);
     setPaintModeViewOpen(false);
+    showSuccess(`Modo pintura activado: ${shiftType}`);
+  };
+
+  // Resetear calendario completo
+  const handleResetCalendar = () => {
+    if (confirm('¿Estás seguro de que quieres resetear el calendario completo? Se perderán todos los datos.')) {
+      setShiftDays([]);
+      localStorage.removeItem('shift_calendar_data_v2');
+      showSuccess('Calendario reseteado correctamente');
+    }
   };
 
   return (
@@ -100,7 +112,7 @@ const Index = () => {
         {isInstallable && (
           <button
             onClick={installApp}
-            className="absolute top-4 right-4 bg-white text-red-600 px-3 py-1 rounded-full text-xs font-medium hover:bg-gray-100 transition-colors"
+            className="absolute top-4 right-4 bg-white text-red-600 px-3 py-1 rounded-full text-xs font-medium hover:bg-gray-100 transition-colors shadow-lg"
           >
             Instalar App
           </button>
@@ -110,10 +122,10 @@ const Index = () => {
       {/* Estadísticas rápidas */}
       <div className="bg-white border-b border-gray-200 py-3 px-4">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">
+          <span className="text-gray-600 font-medium">
             {shiftDays.filter(d => d.shiftType !== ShiftType.FREE).length} días trabajados
           </span>
-          <span className="text-gray-600">
+          <span className="text-gray-600 font-medium">
             {shiftDays.filter(d => d.shiftType === ShiftType.FREE).length} días libres
           </span>
         </div>
@@ -131,30 +143,87 @@ const Index = () => {
         />
       </div>
 
-      {/* Barra de acciones inferior - simplificada */}
-      <div className="bg-white border-t border-gray-200 py-3 px-4">
-        <div className="flex justify-center items-center">
-          {/* Botón Modo Pintura */}
+      {/* Barra de acciones inferior mejorada */}
+      <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 shadow-lg sticky bottom-0 z-10">
+        <div className="flex justify-center items-center gap-6">
+          {/* Botón Resetear Calendario */}
           <button
-            onClick={togglePaintMode}
-            className={`flex flex-col items-center ${
-              isPaintMode 
-                ? 'text-blue-600 scale-110' 
-                : 'text-gray-600 hover:text-purple-600'
-            } transition-all`}
-            title="Modo Pintura"
+            onClick={handleResetCalendar}
+            className="flex flex-col items-center group transition-transform hover:scale-110"
+            title="Resetear Calendario"
           >
-            <Palette className="w-6 h-6 mb-1" />
-            <span className="text-xs">Pintar</span>
+            <div className="bg-white p-3 rounded-full shadow-lg group-hover:shadow-xl transition-all">
+              <RotateCcw className="w-6 h-6 text-red-600" />
+            </div>
+            <span className="text-xs text-white font-medium mt-1 opacity-90">Resetear</span>
           </button>
 
-          {/* Indicador modo pintura activo */}
-          {isPaintMode && (
-            <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-              Modo Pintura: {selectedPaintShift}
+          {/* Botón Modo Pintura - Destacado */}
+          <button
+            onClick={togglePaintMode}
+            className={`flex flex-col items-center group transition-all ${
+              isPaintMode 
+                ? 'scale-110 shadow-2xl' 
+                : 'hover:scale-105'
+            }`}
+            title={isPaintMode ? 'Desactivar Modo Pintura' : 'Activar Modo Pintura'}
+          >
+            <div className={`p-3 rounded-full shadow-xl transition-all duration-300 ${
+              isPaintMode 
+                ? 'bg-gradient-to-br from-yellow-400 to-orange-500 ring-4 ring-yellow-300 ring-opacity-60' 
+                : 'bg-gradient-to-br from-white to-gray-100 group-hover:from-blue-50 group-hover:to-purple-50'
+            }`}>
+              <Palette className={`w-7 h-7 transition-colors ${
+                isPaintMode ? 'text-white' : 'text-purple-600 group-hover:text-blue-600'
+              }`} />
             </div>
-          )}
+            <span className={`text-xs font-bold mt-1 transition-colors ${
+              isPaintMode ? 'text-yellow-200' : 'text-white'
+            }`}>
+              {isPaintMode ? 'PINANDO!' : 'Pintar'}
+            </span>
+            
+            {/* Indicador de turno seleccionado en modo pintura */}
+            {isPaintMode && (
+              <div className="absolute -top-2 -right-2 bg-white text-purple-600 rounded-full w-5 h-5 text-xs font-black flex items-center justify-center shadow-md">
+                {selectedPaintShift}
+              </div>
+            )}
+          </button>
+
+          {/* Separador visual */}
+          <div className="h-12 w-px bg-white/30 mx-2"></div>
+
+          {/* Botones adicionales de utilidad */}
+          <button
+            onClick={() => showSuccess('Función en desarrollo')}
+            className="flex flex-col items-center group transition-transform hover:scale-110"
+            title="Exportar"
+          >
+            <div className="bg-white p-3 rounded-full shadow-lg group-hover:shadow-xl transition-all">
+              <Download className="w-6 h-6 text-green-600" />
+            </div>
+            <span className="text-xs text-white font-medium mt-1 opacity-90">Exportar</span>
+          </button>
+
+          <button
+            onClick={() => showSuccess('Función en desarrollo')}
+            className="flex flex-col items-center group transition-transform hover:scale-110"
+            title="Importar"
+          >
+            <div className="bg-white p-3 rounded-full shadow-lg group-hover:shadow-xl transition-all">
+              <Upload className="w-6 h-6 text-blue-600" />
+            </div>
+            <span className="text-xs text-white font-medium mt-1 opacity-90">Importar</span>
+          </button>
         </div>
+
+        {/* Indicador modo pintura activo */}
+        {isPaintMode && (
+          <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse">
+            🎨 Modo Pintura Activado - Selecciona: {selectedPaintShift}
+          </div>
+        )}
       </div>
 
       {/* Modales */}
