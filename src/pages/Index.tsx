@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Palette, Calendar, Download, Upload } from 'lucide-react';
+import { Palette, Calendar } from 'lucide-react';
 import CalendarView from '../components/CalendarView';
 import ShiftEditor from '../components/ShiftEditor';
 import NoteModal from '../components/NoteModal';
 import PaintModeView from '../components/PaintModeView';
-import SettingsView from '../components/SettingsView';
 import TurnosView from '../components/TurnosView';
 import { ShiftType, ShiftDay } from '../types/ShiftTypes';
 import { saveShiftsToStorage, loadShiftsFromStorage } from '../utils/storage';
@@ -16,7 +15,6 @@ const Index = () => {
   const [shiftEditorDay, setShiftEditorDay] = useState<ShiftDay | null>(null);
   const [noteModalDay, setNoteModalDay] = useState<ShiftDay | null>(null);
   const [paintModeViewOpen, setPaintModeViewOpen] = useState(false);
-  const [settingsViewOpen, setSettingsViewOpen] = useState(false);
   const [turnosViewOpen, setTurnosViewOpen] = useState(false);
   const [isPaintMode, setIsPaintMode] = useState(false);
   const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.FREE);
@@ -138,16 +136,6 @@ const Index = () => {
       {/* Barra de acciones inferior */}
       <div className="bg-white border-t border-gray-200 py-3 px-4">
         <div className="flex justify-around items-center">
-          {/* Botón Configuración */}
-          <button
-            onClick={() => setSettingsViewOpen(true)}
-            className="flex flex-col items-center text-gray-600 hover:text-blue-600 transition-colors"
-            title="Ajustes"
-          >
-            <Settings className="w-6 h-6 mb-1" />
-            <span className="text-xs">Ajustes</span>
-          </button>
-
           {/* Botón Turnos */}
           <button
             onClick={() => setTurnosViewOpen(true)}
@@ -204,13 +192,6 @@ const Index = () => {
           selectedShift={selectedPaintShift}
           onSelectShift={handleSelectPaintShift}
           onClose={() => setPaintModeViewOpen(false)}
-        />
-      )}
-
-      {settingsViewOpen && (
-        <SettingsView
-          shiftDays={shiftDays}
-          onClose={() => setSettingsViewOpen(false)}
         />
       )}
 
