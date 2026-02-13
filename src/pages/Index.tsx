@@ -107,18 +107,6 @@ const Index = () => {
         )}
       </div>
 
-      {/* Estadísticas rápidas */}
-      <div className="bg-white border-b border-gray-200 py-3 px-4">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">
-            {shiftDays.filter(d => d.shiftType !== ShiftType.FREE).length} días trabajados
-          </span>
-          <span className="text-gray-600">
-            {shiftDays.filter(d => d.shiftType === ShiftType.FREE).length} días libres
-          </span>
-        </div>
-      </div>
-
       {/* Calendario */}
       <div className="flex-1 overflow-hidden">
         <CalendarView
