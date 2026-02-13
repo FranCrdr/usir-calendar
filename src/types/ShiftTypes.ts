@@ -1,3 +1,4 @@
+// Clear the file completely and rewrite with proper exports
 export type ShiftType = "T" | "L" | "R" | "A" | "I";
 
 export const getShiftColor = (shiftType: ShiftType): string => {
@@ -17,3 +18,6 @@ export interface ShiftDay {
   shiftType: ShiftType;
   notes: string;
 }
+
+// Force fresh module cache
+// This file definitely exports ShiftType, ShiftDay, and getShiftColor
