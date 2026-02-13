@@ -1,8 +1,5 @@
 // Definiciones de tipos básicos
-type ShiftTypeValue = "T" | "L" | "R" | "A" | "I";
-
-// Exportar como ShiftType
-export type ShiftType = ShiftTypeValue;
+export type ShiftType = "T" | "L" | "R" | "A" | "I";
 
 // Función para obtener colores
 export function getShiftColor(shiftType: ShiftType): string {
@@ -22,4 +19,12 @@ export interface ShiftDay {
   date: Date;
   shiftType: ShiftType;
   notes: string;
+}
+
+// Interface para patrones de turno
+export interface ShiftPattern {
+  id: string;
+  name: string;
+  pattern: ShiftType[];
+  color: string;
 }
