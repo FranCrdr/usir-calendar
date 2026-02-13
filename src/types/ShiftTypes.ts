@@ -19,4 +19,4 @@ export interface ShiftDay {
 }
 
 // Export individual named exports
-export { ShiftType, ShiftDay, getShiftColor };
+export { ShiftType, ShiftDay };
