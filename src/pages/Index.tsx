@@ -51,19 +51,9 @@ const Index = () => {
     const initializeApp = () => {
       try {
         setIsLoading(true);
-        
-        // Verificar espacio de almacenamiento
-        const storageInfo = checkStorageSpace();
-        if (storageInfo.percentage > 90) {
-          console.warn('Espacio de almacenamiento casi lleno. Considera exportar y limpiar datos.');
-        }
-        
-        // Cargar turnos guardados
         const savedShifts = loadShiftsFromStorage();
         console.log('Datos cargados:', savedShifts.length, 'turnos');
-        
         setShiftDays(savedShifts);
-        
       } catch (error) {
         console.error('Error inicializando la aplicación:', error);
       } finally {
@@ -77,38 +67,37 @@ const Index = () => {
   // Guardar automáticamente cuando cambien los turnos
   useEffect(() => {
     if (!isLoading && shiftDays.length > 0) {
-      const timer = setTimeout(() => {
-        console.log('Guardando cambios...', shiftDays.length, 'turnos');
-        saveShiftsToStorage(shiftDays);
-      }, 300);
-      
-      return () => clearTimeout(timer);
+      console.log('Guardando turnos automáticamente...', shiftDays.length);
+      saveShiftsToStorage(shiftDays);
     }
   }, [shiftDays, isLoading]);
 
   const handleDayTap = (day: ShiftDay) => {
-    console.log('Día actualizado:', day.date.toDateString(), 'Turno:', day.shiftType, 'Notas:', day.notes);
+    console.log('🔄 Actualizando día:', day.date.toDateString(), 'Nota:', day.notes);
     
-    // Crear una nueva lista actualizada de días
-    const updatedDays = shiftDays.filter(d => 
-      d.date.toDateString() !== day.date.toDateString()
+    // Actualizar el día específico en el array
+    const updatedDays = [...shiftDays];
+    const index = updatedDays.findIndex(d => 
+      d.date.toDateString() === day.date.toDateString()
     );
     
-    // Agregar el día actualizado
-    updatedDays.push(day);
+    if (index !== -1) {
+      updatedDays[index] = day;
+    } else {
+      updatedDays.push(day);
+    }
     
     setShiftDays(updatedDays);
   };
 
   const handleDayLongPress = (day: ShiftDay) => {
-    console.log('Largo press en día:', day.date.toDateString());
     setSelectedDay(day);
     setIsEditMode(true);
   };
 
   const handleDayNoteTap = (day: ShiftDay) => {
-    console.log('Toque para anotación en día:', day.date.toDateString());
-    setDayForNote(day);
+    console.log('📝 Abriendo notas para:', day.date.toDateString());
+    setDayForNote({...day}); // Crear copia para evitar mutaciones
     setIsNoteMode(true);
   };
 
@@ -124,24 +113,27 @@ const Index = () => {
   const updateNote = (note: string) => {
     if (!dayForNote) return;
     
-    console.log('Actualizando nota para:', dayForNote.date.toDateString(), 'Nota:', note);
+    console.log('💾 Guardando nota:', note, 'para:', dayForNote.date.toDateString());
     
-    const updatedDays = shiftDays.map(d => {
-      if (d.date.toDateString() === dayForNote.date.toDateString()) {
-        console.log('Encontrado día para actualizar:', d.date.toDateString());
-        return { ...d, notes: note };
-      }
-      return d;
-    });
+    // Crear día actualizado con la nueva nota
+    const updatedDay = {
+      ...dayForNote,
+      notes: note
+    };
     
-    console.log('Días después de actualizar nota:', updatedDays.length);
+    // Actualizar en el array
+    const updatedDays = shiftDays.map(d => 
+      d.date.toDateString() === dayForNote.date.toDateString() ? updatedDay : d
+    );
+    
     setShiftDays(updatedDays);
     setIsNoteMode(false);
     setDayForNote(null);
+    
+    console.log('✅ Nota guardada exitosamente');
   };
 
   const startPaintMode = () => {
-    console.log('Iniciando modo pintar...');
     setIsPaintMode(true);
     setIsTurnosMode(false);
     setIsSettingsMode(false);
@@ -149,13 +141,11 @@ const Index = () => {
   };
 
   const finishPaintMode = () => {
-    console.log('Terminando modo pintar...');
     setIsPaintMode(false);
     setShowPaintToolbar(false);
   };
 
   const handlePaintShiftSelect = (shiftType: ShiftType) => {
-    console.log('Seleccionado turno para pintar:', shiftType);
     setSelectedPaintShift(shiftType);
     setIsPaintMode(false);
     setShowPaintToolbar(true);
@@ -163,8 +153,6 @@ const Index = () => {
 
   const paintDay = (day: ShiftDay) => {
     if (showPaintToolbar) {
-      console.log('Pintando día:', day.date.toDateString(), 'con turno:', selectedPaintShift);
-      
       const updatedDay = {
         ...day,
         shiftType: selectedPaintShift
@@ -187,17 +175,6 @@ const Index = () => {
     setIsTurnosMode(false);
     setShowPaintToolbar(false);
   };
-
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (shiftDays.length > 0) {
-        saveShiftsToStorage(shiftDays);
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [shiftDays]);
 
   if (isLoading) {
     return (
