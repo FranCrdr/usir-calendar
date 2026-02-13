@@ -1,7 +1,11 @@
-// Clear the file completely and rewrite with proper exports
-export type ShiftType = "T" | "L" | "R" | "A" | "I";
+// Definiciones de tipos básicos
+type ShiftTypeValue = "T" | "L" | "R" | "A" | "I";
 
-export const getShiftColor = (shiftType: ShiftType): string => {
+// Exportar como ShiftType
+export type ShiftType = ShiftTypeValue;
+
+// Función para obtener colores
+export function getShiftColor(shiftType: ShiftType): string {
   switch (shiftType) {
     case "T": return "bg-red-600 text-white";
     case "L": return "bg-green-200 text-green-800";
@@ -10,14 +14,12 @@ export const getShiftColor = (shiftType: ShiftType): string => {
     case "I": return "bg-yellow-200 text-yellow-800";
     default: return "bg-gray-100 text-gray-500";
   }
-};
+}
 
+// Interface para días de turno
 export interface ShiftDay {
   id: string;
   date: Date;
   shiftType: ShiftType;
   notes: string;
 }
-
-// Force fresh module cache
-// This file definitely exports ShiftType, ShiftDay, and getShiftColor
