@@ -33,31 +33,26 @@ const DayCell: React.FC<DayCellProps> = ({
 
   const handleTouchStart = () => {
     longPressTimerRef.current = setTimeout(() => {
-      // Largo press - abrir editor completo
       if (onLongPress) {
         onLongPress(shiftDay);
       }
-      setShowSelector(false); // Asegurar que el selector no se muestre simultáneamente
+      setShowSelector(false);
     }, 500);
   };
 
   const handleTouchEnd = () => {
-    // Limpiar el timer del largo press
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current);
       longPressTimerRef.current = null;
     }
     
-    // Si estamos en modo pintar, aplicar el turno directamente
     if (isPaintMode && onTap) {
       onTap(shiftDay);
       return;
     }
     
-    // Para clics normales, mostrar el selector después de un breve retraso
-    clickTimerRef.current = setTimeout(() => {
-      setShowSelector(true);
-    }, 150);
+    // Mostrar selector inmediatamente
+    setShowSelector(true);
   };
 
   const handleShiftSelect = (shiftType: ShiftType) => {
@@ -73,34 +68,31 @@ const DayCell: React.FC<DayCellProps> = ({
   };
 
   const handleAddNote = () => {
+    console.log('Botón nota pulsado para:', shiftDay.date.toDateString());
     if (onDayNoteTap) {
       onDayNoteTap(shiftDay);
-      setShowSelector(false);
     }
+    setShowSelector(false);
   };
 
   const handleClick = () => {
-    // Limpiar cualquier timer pendiente
     if (clickTimerRef.current) {
       clearTimeout(clickTimerRef.current);
       clickTimerRef.current = null;
     }
     
-    // Doble clic rápido para abrir directamente notas
     if (!isPaintMode) {
       setShowSelector(true);
     }
   };
 
   const handleDoubleClick = () => {
-    // Doble clic para anotación rápida
     if (onDayNoteTap && !isPaintMode) {
-      // Limpiar timer de clic simple
       if (clickTimerRef.current) {
         clearTimeout(clickTimerRef.current);
         clickTimerRef.current = null;
       }
-      setShowSelector(false);
+      console.log('Doble clic para nota en:', shiftDay.date.toDateString());
       onDayNoteTap(shiftDay);
     }
   };
@@ -108,7 +100,7 @@ const DayCell: React.FC<DayCellProps> = ({
   const dayNumber = shiftDay.date.getDate();
   const shiftColor = getShiftColor(shiftDay.shiftType);
   const hasNotes = shiftDay.notes && shiftDay.notes.trim().length > 0;
-  const shortNote = hasNotes ? shiftDay.notes.substring(0, 20) + (shiftDay.notes.length > 20 ? '...' : '') : '';
+  const shortNote = hasNotes ? shiftDay.notes.substring(0, 15) + (shiftDay.notes.length > 15 ? '...' : '') : '';
 
   return (
     <>
@@ -154,14 +146,14 @@ const DayCell: React.FC<DayCellProps> = ({
           {hasNotes && (
             <div className="absolute bottom-0 left-0 right-0 px-1">
               <div className="bg-black bg-opacity-80 rounded-b-lg px-2 py-1">
-                <p className="text-[9px] text-white text-center font-medium leading-tight truncate select-none">
+                <p className="text-[10px] text-white text-center font-medium leading-tight truncate select-none">
                   {shortNote}
                 </p>
               </div>
             </div>
           )}
 
-          {/* Indicador de nota con icono */}
+          {/* Indicador de nota cuando hay notas pero no caben */}
           {hasNotes && !shortNote && (
             <div className="absolute bottom-1 left-1 w-2 h-2 bg-blue-500 rounded-full"></div>
           )}
@@ -188,10 +180,10 @@ const DayCell: React.FC<DayCellProps> = ({
               </p>
             </div>
 
-            {/* Botón rápido para añadir nota */}
+            {/* Botón rápido para añadir nota - MÁS VISIBLE */}
             <button
               onClick={handleAddNote}
-              className="w-full p-4 mb-4 bg-blue-50 text-blue-600 rounded-lg font-medium flex items-center justify-center hover:bg-blue-100 transition-colors"
+              className="w-full p-4 mb-4 bg-blue-600 text-white rounded-lg font-medium flex items-center justify-center hover:bg-blue-700 transition-colors shadow-md"
             >
               <Edit3 className="w-5 h-5 mr-2" />
               {hasNotes ? 'Editar Nota' : 'Añadir Nota'}
@@ -221,7 +213,7 @@ const DayCell: React.FC<DayCellProps> = ({
               onClick={() => setShowSelector(false)}
               className="w-full p-3 border border-gray-300 rounded-lg text-gray-600 font-medium hover:bg-gray-50 transition-colors"
             >
-              Cancelar
+              Cerrar
             </button>
           </div>
         </div>

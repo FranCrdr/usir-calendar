@@ -126,10 +126,15 @@ const Index = () => {
     
     console.log('Actualizando nota para:', dayForNote.date.toDateString(), 'Nota:', note);
     
-    const updatedDays = shiftDays.map(d => 
-      d.date.toDateString() === dayForNote.date.toDateString() ? { ...d, notes: note } : d
-    );
+    const updatedDays = shiftDays.map(d => {
+      if (d.date.toDateString() === dayForNote.date.toDateString()) {
+        console.log('Encontrado día para actualizar:', d.date.toDateString());
+        return { ...d, notes: note };
+      }
+      return d;
+    });
     
+    console.log('Días después de actualizar nota:', updatedDays.length);
     setShiftDays(updatedDays);
     setIsNoteMode(false);
     setDayForNote(null);
@@ -232,7 +237,7 @@ const Index = () => {
             <span>📱 Instala la app para mejor experiencia</span>
             <button 
               onClick={installApp}
-              className="ml-2 px-2 py-1 bg-white text-blue-600 rounded text-xs font-medium flex items-center"
+              className="ml-2 px-2 py-1 bg-white text-blue-600 rounded text-xs font-medium flex items-centered"
             >
               <Download className="w-3 h-3 mr-1" />
               Instalar
