@@ -9,49 +9,36 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  useEffect(() => {
-    // Registrar Service Worker para PWA
-    const registerServiceWorker = async () => {
-      if ('serviceWorker' in navigator) {
-        try {
-          const registration = await navigator.serviceWorker.register('/service-worker.js', {
-            scope: '/'
-          });
-          console.log('Service Worker registrado con éxito:', registration);
-        } catch (error) {
-          console.log('Registro de Service Worker falló:', error);
-        }
-      }
-    };
+useEffect(() => {
+const registerServiceWorker = async () => {
+if ('serviceWorker' in navigator) {
+try {
+// CAMBIO CLAVE: Quitamos la barra inicial para que lo busque en tu carpeta
+const registration = await navigator.serviceWorker.register('service-worker.js', {
+scope: './'
+});
+console.log('Service Worker registrado:', registration);
+} catch (error) {
+console.log('Fallo en SW:', error);
+}
+}
+};
+registerServiceWorker();
+}, []);
 
-    registerServiceWorker();
-  }, []);
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster 
-          position="top-center"
-          toastOptions={{
-            style: {
-              background: '#fff',
-              color: '#333',
-              border: '1px solid #e5e5e5',
-              borderRadius: '12px',
-              fontSize: '14px',
-            },
-          }}
-        />
-        <BrowserRouter basename="/usir-calendar">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
+return (
+<QueryClientProvider client={queryClient}>
+<TooltipProvider>
+<Toaster position="top-center" />
+<BrowserRouter basename="/usir-calendar">
+<Routes>
+<Route path="/" element={<Index />} />
+<Route path="*" element={<NotFound />} />
+</Routes>
+</BrowserRouter>
+</TooltipProvider>
+</QueryClientProvider>
+);
 };
 
 export default App;
