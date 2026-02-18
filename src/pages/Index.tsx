@@ -35,8 +35,14 @@ const Index = () => {
   // Manejar clic en día del calendario
   const handleDayClick = (day: ShiftDay) => {
     if (isPaintMode) {
-      // En modo pintura, aplicar el turno seleccionado
-      const updatedDay = { ...day, shiftType: selectedPaintShift };
+      // Lógica de alternancia (toggle):
+      // Si el día ya tiene el turno seleccionado, lo reseteamos a LIBRE (ShiftType.FREE)
+      // Si tiene un turno distinto, le aplicamos el seleccionado
+      const newShiftType = day.shiftType === selectedPaintShift 
+        ? ShiftType.FREE 
+        : selectedPaintShift;
+        
+      const updatedDay = { ...day, shiftType: newShiftType };
       updateDay(updatedDay);
     } else {
       // En modo normal, abrir editor de turno completo
