@@ -72,7 +72,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     return existing || {
       id: date.toISOString(),
       date,
-      shiftType: 'L',
+      shiftType: 'L' as any,
       notes: ''
     };
   };
@@ -84,25 +84,25 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       {/* Header del calendario */}
       <div className="py-4 px-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
-          <button onClick={() => navigateMonth('prev')} className="p-2 hover:bg-gray-100 rounded">
-            <ChevronLeft className="w-5 h-5" />
+          <button onClick={() => navigateMonth('prev')} className="p-2 hover:bg-gray-100 rounded transition-colors">
+            <ChevronLeft className="w-6 h-6" />
           </button>
           
           <div className="text-center">
-            <h1 className="text-xl font-semibold">
+            <h1 className="text-2xl font-black uppercase tracking-tight text-gray-900">
               {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
             </h1>
           </div>
           
-          <button onClick={() => navigateMonth('next')} className="p-2 hover:bg-gray-100 rounded">
-            <ChevronRight className="w-5 h-5" />
+          <button onClick={() => navigateMonth('next')} className="p-2 hover:bg-gray-100 rounded transition-colors">
+            <ChevronRight className="w-6 h-6" />
           </button>
         </div>
 
         {/* Días de la semana */}
         <div className="grid grid-cols-7 mt-4">
           {daysOfWeek.map(day => (
-            <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+            <div key={day} className="text-center text-xs font-bold text-gray-400 py-2">
               {day}
             </div>
           ))}
