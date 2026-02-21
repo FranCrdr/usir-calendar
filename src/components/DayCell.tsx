@@ -17,15 +17,19 @@ const DayCell: React.FC<DayCellProps> = ({
   isCurrentMonth
 }) => {
   const handleClick = (e: React.MouseEvent) => {
+    // Evitamos comportamientos por defecto del navegador
     e.preventDefault();
     e.stopPropagation();
     
-    // Siempre llamamos a onDayClick para que el Index decida qué abrir
-    // (Editor en modo normal, Pintar en modo pintura)
-    onDayClick(shiftDay);
+    if (isPaintMode) {
+      onDayClick(shiftDay);
+    } else {
+      onNoteClick(shiftDay);
+    }
   };
 
   const handleDoubleClick = (e: React.MouseEvent) => {
+    // En móviles el doble clic puede disparar el zoom, lo evitamos en modo pintura
     if (isPaintMode) return;
     e.stopPropagation();
     onNoteClick(shiftDay);
