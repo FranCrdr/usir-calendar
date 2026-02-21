@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ShiftDay } from '../types/ShiftTypes';
+import { ShiftDay, ShiftType } from '../types/ShiftTypes';
 import DayCell from './DayCell';
 
 interface CalendarViewProps {
@@ -38,7 +38,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
     const days: Date[] = [];
 
-    // Días del mes anterior (en orden correcto: del último día hacia atrás)
     if (adjustedStart > 0) {
       const previousMonthLastDay = new Date(year, month, 0).getDate();
       for (let i = adjustedStart; i > 0; i--) {
@@ -46,7 +45,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       }
     }
 
-    // Días del mes actual
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(new Date(year, month, i));
     }
@@ -72,7 +70,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     return existing || {
       id: date.toISOString(),
       date,
-      shiftType: 'L' as any,
+      shiftType: ShiftType.FREE,
       notes: ''
     };
   };
@@ -81,7 +79,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   return (
     <div className="flex-1 bg-white">
-      {/* Header del calendario */}
       <div className="py-4 px-6 border-b border-gray-200">
         <div className="flex items-center justify-between">
           <button onClick={() => navigateMonth('prev')} className="p-2 hover:bg-gray-100 rounded transition-colors">
@@ -99,7 +96,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           </button>
         </div>
 
-        {/* Días de la semana */}
         <div className="grid grid-cols-7 mt-4">
           {daysOfWeek.map(day => (
             <div key={day} className="text-center text-xs font-bold text-gray-400 py-2">
@@ -109,7 +105,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
       </div>
 
-      {/* Grid de días */}
       <div className="grid grid-cols-7 gap-px bg-gray-200">
         {days.map((date, index) => (
           <DayCell

@@ -17,26 +17,21 @@ const DayCell: React.FC<DayCellProps> = ({
   isCurrentMonth
 }) => {
   const handleClick = (e: React.MouseEvent) => {
+    // Evitamos comportamientos por defecto del navegador
+    e.preventDefault();
     e.stopPropagation();
     
-    // Si estamos en modo pintura, cambia el tipo de turno
     if (isPaintMode) {
       onDayClick(shiftDay);
-      return;
-    }
-    
-    // Si no hay nota, abre el modal de notas
-    if (!shiftDay.notes?.trim()) {
-      onNoteClick(shiftDay);
     } else {
-      // Si ya hay nota, también abre el modal para editar
       onNoteClick(shiftDay);
     }
   };
 
   const handleDoubleClick = (e: React.MouseEvent) => {
+    // En móviles el doble clic puede disparar el zoom, lo evitamos en modo pintura
+    if (isPaintMode) return;
     e.stopPropagation();
-    // Doble clic siempre abre el modal de notas
     onNoteClick(shiftDay);
   };
 
@@ -46,11 +41,12 @@ const DayCell: React.FC<DayCellProps> = ({
 
   return (
     <div
-      className={`relative aspect-square bg-white cursor-pointer transition-all ${
-        isPaintMode ? 'hover:scale-105' : 'hover:bg-gray-50'
+      className={`relative aspect-square bg-white cursor-pointer transition-all select-none touch-manipulation ${
+        isPaintMode ? 'active:scale-95' : 'hover:bg-gray-50'
       } ${isCurrentMonth ? 'opacity-100' : 'opacity-50'}`}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
+      style={{ WebkitTapHighlightColor: 'transparent' }}
     >
       <div className={`h-full flex flex-col items-center justify-center rounded-lg border-2 ${shiftColor}`}>
         {/* Fecha */}
@@ -65,7 +61,7 @@ const DayCell: React.FC<DayCellProps> = ({
           <div className="text-sm font-bold">{shiftDay.shiftType}</div>
         )}
 
-        {/* Indicador de nota - Mejorado para mostrar más texto */}
+        {/* Indicador de nota */}
         {hasNotes && (
           <div className="absolute inset-1 bg-white bg-opacity-90 rounded-md border border-gray-300 p-1 flex flex-col">
             <div className="flex-1 overflow-hidden">
