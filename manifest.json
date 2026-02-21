@@ -1,7 +1,7 @@
 {
   "name": "Calendario de Turnos",
-  "short_name": "TurnosApp",
-  "description": "Gestor de turnos para trabajadores - Funciona offline",
+  "short_name": "TurnosUsir",
+  "description": "Gestor de turnos para trabajadores",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
