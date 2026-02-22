@@ -23,63 +23,60 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
 
   const handleShiftSelect = (shiftType: ShiftType) => {
     onSelectShift(shiftType);
-    onClose(); // Cerrar inmediatamente después de seleccionar
+    onClose();
   };
 
   const handleEraserSelect = () => {
     onSelectShift(ShiftType.FREE);
-    onClose(); // Cerrar inmediatamente después de seleccionar borrar
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden">
-        {/* Header con X roja */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end justify-center p-4 z-50">
+      <div className="bg-[#0a0a0c]/90 backdrop-blur-2xl rounded-3xl w-full max-w-md overflow-hidden border border-white/10 shadow-2xl animate-in slide-in-from-bottom-10 duration-300">
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-white/10 bg-white/5">
           <div className="flex items-center">
-            <Paintbrush className="w-5 h-5 text-blue-600 mr-2" />
-            <h2 className="text-lg font-semibold text-gray-800">Modo Pintar</h2>
+            <div className="p-2 bg-blue-500/20 rounded-lg mr-3">
+              <Paintbrush className="w-5 h-5 text-blue-400" />
+            </div>
+            <h2 className="text-lg font-black text-white tracking-tight uppercase">Modo Pintar</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm"
+            className="p-2 rounded-full bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors border border-red-500/20"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+        <div className="p-6">
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 mb-6">
             <div className="flex items-start">
-              <RotateCcw className="w-4 h-4 text-blue-600 mt-0.5 mr-2 flex-shrink-0" />
-              <div className="text-sm text-blue-800">
-                <p className="font-medium">¡Funcionalidad mejorada!</p>
-                <p className="mt-1">Ahora puedes hacer clic nuevamente en un día pintado para revertirlo a su estado anterior.</p>
+              <RotateCcw className="w-4 h-4 text-blue-400 mt-0.5 mr-3 flex-shrink-0" />
+              <div className="text-sm text-blue-100/80">
+                <p className="font-bold text-blue-300">¡Funcionalidad mejorada!</p>
+                <p className="mt-1">Toca un día para pintarlo. Si vuelves a tocarlo, se borrará el turno.</p>
               </div>
             </div>
           </div>
 
-          <p className="text-sm text-gray-600 mb-4">
-            Selecciona un tipo de turno y podrás pintar días directamente en el calendario.
-            Haz clic nuevamente en el mismo día para revertir el cambio.
-          </p>
-
           {/* Botón Borrar */}
-          <div className="mb-4">
+          <div className="mb-6">
             <button
               onClick={handleEraserSelect}
-              className={`w-full p-4 rounded-lg text-center transition-all min-h-[80px] border-2 ${
+              className={`w-full p-4 rounded-2xl text-center transition-all border-2 flex flex-col items-center justify-center gap-1 ${
                 selectedShift === ShiftType.FREE 
-                  ? 'bg-red-100 text-red-800 border-red-400 ring-2 ring-red-500 ring-offset-2 scale-105' 
-                  : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'
+                  ? 'bg-red-500/20 text-white border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)] scale-[1.02]' 
+                  : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10'
               }`}
             >
-              <div className="flex items-center justify-center mb-2">
+              <div className="flex items-center justify-center">
                 <Eraser className="w-6 h-6 mr-2" />
-                <span className="text-lg font-bold">Borrar</span>
+                <span className="text-lg font-black uppercase tracking-wider">Borrar</span>
               </div>
-              <div className="text-xs">Limpia el turno del día seleccionado</div>
+              <div className="text-[10px] font-bold opacity-60 uppercase tracking-widest">Limpia el turno del día</div>
             </button>
           </div>
 
@@ -89,27 +86,27 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
               <button
                 key={option.type}
                 onClick={() => handleShiftSelect(option.type)}
-                className={`p-4 rounded-lg text-center transition-all min-h-[80px] ${
+                className={`p-4 rounded-2xl text-center transition-all border-2 ${
                   getShiftColor(option.type)
                 } ${
                   selectedShift === option.type 
-                    ? 'ring-2 ring-blue-500 ring-offset-2 scale-105' 
-                    : 'hover:opacity-90'
+                    ? 'ring-4 ring-blue-500/30 border-white scale-[1.02] shadow-lg' 
+                    : 'border-transparent opacity-80 hover:opacity-100'
                 }`}
                 title={option.description}
               >
                 <div className="text-2xl mb-1">{option.icon}</div>
-                <div className="text-lg font-bold">{option.type}</div>
-                <div className="text-sm opacity-80">{option.label}</div>
+                <div className="text-xl font-black">{option.type}</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest opacity-70">{option.label}</div>
               </button>
             ))}
           </div>
 
-          {/* Solo botón Cancelar (Aplicar eliminado) */}
-          <div className="flex space-x-2 mt-4">
+          {/* Botón Cancelar */}
+          <div className="mt-6">
             <button
               onClick={onClose}
-              className="w-full p-3 border border-gray-300 rounded-lg text-gray-600 font-medium hover:bg-gray-50 transition-colors"
+              className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl text-white font-black uppercase tracking-[0.2em] text-xs hover:bg-white/10 transition-all active:scale-95"
             >
               Cancelar
             </button>
