@@ -46,30 +46,30 @@ const DayCell: React.FC<DayCellProps> = ({
 
   return (
     <div
-      className={`relative h-full w-full cursor-pointer transition-all select-none touch-manipulation ${
-        isPaintMode ? 'active:scale-95' : 'hover:bg-white/5'
-      } ${isCurrentMonth ? 'opacity-100' : 'opacity-30'}`}
+      className={`relative aspect-square cursor-pointer transition-all select-none touch-manipulation ${
+        isPaintMode ? 'active:scale-90' : 'hover:bg-white/5'
+      } ${isCurrentMonth ? 'opacity-100' : 'opacity-40'}`}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       style={{ WebkitTapHighlightColor: 'transparent' }}
     >
-      <div className={`h-full flex flex-col items-center justify-center rounded-lg border ${borderColor} ${cellBg} transition-colors duration-300 m-0.5`}>
+      <div className={`h-full flex flex-col items-center justify-center rounded-xl border ${borderColor} ${cellBg} transition-colors duration-300 m-0.5`}>
         {/* Fecha - Blanco radiante y negrita */}
-        <div className={`text-[10px] font-black absolute top-1 right-1.5 ${
-          isCurrentMonth ? 'text-white' : 'text-white/20'
+        <div className={`text-[11px] font-black absolute top-1.5 right-1.5 drop-shadow-[0_0_2px_rgba(255,255,255,0.5)] ${
+          isCurrentMonth ? 'text-white' : 'text-white/30'
         }`}>
           {dayNumber}
         </div>
 
         {/* Tipo de turno */}
         {!isFree && (
-          <div className="text-xs font-black drop-shadow-md text-white">{shiftDay.shiftType}</div>
+          <div className="text-sm font-black drop-shadow-md text-white">{shiftDay.shiftType}</div>
         )}
 
         {/* Indicador de nota */}
         {hasNotes && (
-          <div className="absolute inset-1 bg-black/40 backdrop-blur-sm rounded-md border border-white/10 p-0.5 flex flex-col overflow-hidden">
-            <p className="text-[7px] text-white/80 leading-tight break-words line-clamp-2">
+          <div className="absolute inset-1.5 bg-black/60 backdrop-blur-md rounded-lg border border-white/10 p-1 flex flex-col overflow-hidden shadow-lg">
+            <p className="text-[8px] text-white/90 leading-tight break-words line-clamp-3">
               {shiftDay.notes}
             </p>
           </div>
