@@ -85,7 +85,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#050508] flex flex-col relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#050508] flex flex-col relative overflow-hidden">
       {/* Fondo Espacial con Gradientes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px]" />
@@ -94,7 +94,7 @@ const Index = () => {
       </div>
 
       {/* Header */}
-      <header className="w-full bg-gradient-to-r from-red-600 via-red-700 to-black py-6 px-4 text-center relative z-10 shadow-lg">
+      <div className="bg-gradient-to-r from-red-600 via-red-700 to-black py-6 px-4 text-center relative z-10 shadow-lg">
         <h1 className="text-4xl font-black text-white mb-2 tracking-tighter">USIR</h1>
         <p className="text-white/80 text-xs font-bold tracking-[0.2em] uppercase">Calendario de Turnos</p>
         
@@ -106,11 +106,11 @@ const Index = () => {
             Instalar App
           </button>
         )}
-      </header>
+      </div>
 
-      {/* Contenedor del Calendario */}
-      <main className="flex-1 w-full flex flex-col items-center justify-start relative z-10 px-2 py-4 overflow-hidden">
-        <div className="w-full max-w-4xl h-full bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
+      {/* Calendario */}
+      <div className="flex-1 overflow-hidden relative z-10 px-2 py-4">
+        <div className="h-full max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
           <CalendarView
             currentDate={currentDate}
             setCurrentDate={setCurrentDate}
@@ -120,11 +120,11 @@ const Index = () => {
             isPaintMode={isPaintMode}
           />
         </div>
-      </main>
+      </div>
 
       {/* Barra de acciones inferior */}
-      <footer className="w-full relative z-10 bg-black/40 backdrop-blur-2xl border-t border-white/10 py-4 px-4">
-        <div className="flex justify-center items-center w-full max-w-4xl mx-auto">
+      <div className="relative z-10 bg-black/40 backdrop-blur-2xl border-t border-white/10 py-4 px-4">
+        <div className="flex justify-center items-center max-w-4xl mx-auto">
           <button
             onClick={togglePaintMode}
             className={`flex flex-col items-center group transition-all duration-300 ${
@@ -141,12 +141,12 @@ const Index = () => {
           </button>
 
           {isPaintMode && (
-            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-bounce whitespace-nowrap">
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-bounce">
               MODO PINTURA: {selectedPaintShift}
             </div>
           )}
         </div>
-      </footer>
+      </div>
 
       {/* Modales */}
       {shiftEditorDay && (
