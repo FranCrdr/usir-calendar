@@ -109,8 +109,8 @@ const Index = () => {
       </header>
 
       {/* Contenedor del Calendario */}
-      <main className="flex-1 w-full flex flex-col items-center justify-start relative z-10 px-4 py-4 overflow-hidden">
-        <div className="w-full max-w-4xl bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
+      <main className="flex-1 w-full flex flex-col items-center justify-start relative z-10 px-2 py-4 overflow-hidden">
+        <div className="w-full max-w-4xl h-full bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
           <CalendarView
             currentDate={currentDate}
             setCurrentDate={setCurrentDate}
