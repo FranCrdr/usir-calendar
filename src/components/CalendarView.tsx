@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ShiftDay, ShiftType } from '../types/ShiftTypes';
@@ -78,34 +80,40 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const days = getDaysInMonth(currentDate);
 
   return (
-    <div className="flex-1 bg-white">
-      <div className="py-4 px-6 border-b border-gray-200">
+    <div className="flex-1 flex flex-col h-full">
+      <div className="py-6 px-6 border-b border-white/10">
         <div className="flex items-center justify-between">
-          <button onClick={() => navigateMonth('prev')} className="p-2 hover:bg-gray-100 rounded transition-colors">
+          <button 
+            onClick={() => navigateMonth('prev')} 
+            className="p-2 hover:bg-white/10 rounded-full transition-all text-white/70 hover:text-white"
+          >
             <ChevronLeft className="w-6 h-6" />
           </button>
           
           <div className="text-center">
-            <h1 className="text-2xl font-black uppercase tracking-tight text-gray-900">
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+            <h1 className="text-2xl font-black uppercase tracking-widest text-white">
+              {monthNames[currentDate.getMonth()]} <span className="text-white/40">{currentDate.getFullYear()}</span>
             </h1>
           </div>
           
-          <button onClick={() => navigateMonth('next')} className="p-2 hover:bg-gray-100 rounded transition-colors">
+          <button 
+            onClick={() => navigateMonth('next')} 
+            className="p-2 hover:bg-white/10 rounded-full transition-all text-white/70 hover:text-white"
+          >
             <ChevronRight className="w-6 h-6" />
           </button>
         </div>
 
-        <div className="grid grid-cols-7 mt-4">
+        <div className="grid grid-cols-7 mt-6">
           {daysOfWeek.map(day => (
-            <div key={day} className="text-center text-xs font-bold text-gray-400 py-2">
+            <div key={day} className="text-center text-[10px] font-black text-white/30 py-2 tracking-widest">
               {day}
             </div>
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-gray-200">
+      <div className="grid grid-cols-7 gap-px bg-white/5 flex-1 overflow-y-auto">
         {days.map((date, index) => (
           <DayCell
             key={`${date.toISOString()}-${index}`}

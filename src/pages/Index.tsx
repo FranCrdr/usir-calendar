@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { Palette } from 'lucide-react';
 import CalendarView from '../components/CalendarView';
@@ -19,25 +21,19 @@ const Index = () => {
 
   const { isInstallable, installApp } = usePWA();
 
-  // Cargar datos al iniciar
   useEffect(() => {
     const savedShifts = loadShiftsFromStorage();
     setShiftDays(savedShifts);
   }, []);
 
-  // Guardar datos cuando cambien
   useEffect(() => {
     if (shiftDays.length > 0) {
       saveShiftsToStorage(shiftDays);
     }
   }, [shiftDays]);
 
-  // Manejar clic en día del calendario
   const handleDayClick = (day: ShiftDay) => {
     if (isPaintMode) {
-      // Lógica de alternancia (toggle):
-      // Si el día ya tiene el turno seleccionado, lo reseteamos a LIBRE (ShiftType.FREE)
-      // Si tiene un turno distinto, le aplicamos el seleccionado
       const newShiftType = day.shiftType === selectedPaintShift 
         ? ShiftType.FREE 
         : selectedPaintShift;
@@ -45,17 +41,14 @@ const Index = () => {
       const updatedDay = { ...day, shiftType: newShiftType };
       updateDay(updatedDay);
     } else {
-      // En modo normal, abrir editor de turno completo
       setShiftEditorDay(day);
     }
   };
 
-  // Manejar clic en nota
   const handleNoteClick = (day: ShiftDay) => {
     setNoteModalDay(day);
   };
 
-  // Actualizar un día específico
   const updateDay = (updatedDay: ShiftDay) => {
     const updatedDays = shiftDays.filter(d => 
       d.date.toDateString() !== updatedDay.date.toDateString()
@@ -64,13 +57,11 @@ const Index = () => {
     setShiftDays(updatedDays);
   };
 
-  // Guardar cambios del editor
   const handleSaveShift = (day: ShiftDay) => {
     updateDay(day);
     setShiftEditorDay(null);
   };
 
-  // Guardar nota
   const handleSaveNote = (note: string) => {
     if (!noteModalDay) return;
     
@@ -79,7 +70,6 @@ const Index = () => {
     setNoteModalDay(null);
   };
 
-  // Toggle modo pintura
   const togglePaintMode = () => {
     if (!isPaintMode) {
       setPaintModeViewOpen(true);
@@ -88,7 +78,6 @@ const Index = () => {
     }
   };
 
-  // Seleccionar turno en modo pintura
   const handleSelectPaintShift = (shiftType: ShiftType) => {
     setSelectedPaintShift(shiftType);
     setIsPaintMode(true);
@@ -96,17 +85,23 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-[#050508] flex flex-col relative overflow-hidden">
+      {/* Fondo Espacial con Gradientes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[120px]" />
+        <div className="absolute top-[20%] right-[5%] w-[30%] h-[30%] bg-red-900/10 rounded-full blur-[100px]" />
+      </div>
+
       {/* Header */}
-      <div className="bg-gradient-to-r from-red-600 via-red-700 to-black py-6 px-4 text-center relative">
-        <h1 className="text-4xl font-black text-white mb-2">USIR</h1>
-        <p className="text-white/90 text-sm">CALENDARIO DE TURNOS</p>
+      <div className="bg-gradient-to-r from-red-600 via-red-700 to-black py-6 px-4 text-center relative z-10 shadow-lg">
+        <h1 className="text-4xl font-black text-white mb-2 tracking-tighter">USIR</h1>
+        <p className="text-white/80 text-xs font-bold tracking-[0.2em] uppercase">Calendario de Turnos</p>
         
-        {/* Botón de instalación PWA */}
         {isInstallable && (
           <button
             onClick={installApp}
-            className="absolute top-4 right-4 bg-white text-red-600 px-3 py-1 rounded-full text-xs font-medium hover:bg-gray-100 transition-colors"
+            className="absolute top-4 right-4 bg-white/10 backdrop-blur-md text-white border border-white/20 px-3 py-1 rounded-full text-xs font-medium hover:bg-white/20 transition-colors"
           >
             Instalar App
           </button>
@@ -114,38 +109,40 @@ const Index = () => {
       </div>
 
       {/* Calendario */}
-      <div className="flex-1 overflow-hidden">
-        <CalendarView
-          currentDate={currentDate}
-          setCurrentDate={setCurrentDate}
-          shiftDays={shiftDays}
-          onDayClick={handleDayClick}
-          onNoteClick={handleNoteClick}
-          isPaintMode={isPaintMode}
-        />
+      <div className="flex-1 overflow-hidden relative z-10 px-2 py-4">
+        <div className="h-full max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
+          <CalendarView
+            currentDate={currentDate}
+            setCurrentDate={setCurrentDate}
+            shiftDays={shiftDays}
+            onDayClick={handleDayClick}
+            onNoteClick={handleNoteClick}
+            isPaintMode={isPaintMode}
+          />
+        </div>
       </div>
 
-      {/* Barra de acciones inferior - simplificada */}
-      <div className="bg-white border-t border-gray-200 py-3 px-4">
-        <div className="flex justify-center items-center">
-          {/* Botón Modo Pintura */}
+      {/* Barra de acciones inferior */}
+      <div className="relative z-10 bg-black/40 backdrop-blur-2xl border-t border-white/10 py-4 px-4">
+        <div className="flex justify-center items-center max-w-4xl mx-auto">
           <button
             onClick={togglePaintMode}
-            className={`flex flex-col items-center ${
+            className={`flex flex-col items-center group transition-all duration-300 ${
               isPaintMode 
-                ? 'text-blue-600 scale-110' 
-                : 'text-gray-600 hover:text-purple-600'
-            } transition-all`}
+                ? 'text-blue-400 scale-110' 
+                : 'text-gray-400 hover:text-white'
+            }`}
             title="Modo Pintura"
           >
-            <Palette className="w-6 h-6 mb-1" />
-            <span className="text-xs">Pintar</span>
+            <div className={`p-3 rounded-2xl transition-all duration-300 ${isPaintMode ? 'bg-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.3)]' : 'bg-white/5 group-hover:bg-white/10'}`}>
+              <Palette className="w-6 h-6" />
+            </div>
+            <span className="text-[10px] mt-1 font-bold uppercase tracking-widest">Pintar</span>
           </button>
 
-          {/* Indicador modo pintura activo */}
           {isPaintMode && (
-            <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-              Modo Pintura: {selectedPaintShift}
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-bounce">
+              MODO PINTURA: {selectedPaintShift}
             </div>
           )}
         </div>

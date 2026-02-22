@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { ShiftDay, ShiftType, getShiftColor } from '../types/ShiftTypes';
 
@@ -17,7 +19,6 @@ const DayCell: React.FC<DayCellProps> = ({
   isCurrentMonth
 }) => {
   const handleClick = (e: React.MouseEvent) => {
-    // Evitamos comportamientos por defecto del navegador
     e.preventDefault();
     e.stopPropagation();
     
@@ -29,7 +30,6 @@ const DayCell: React.FC<DayCellProps> = ({
   };
 
   const handleDoubleClick = (e: React.MouseEvent) => {
-    // En móviles el doble clic puede disparar el zoom, lo evitamos en modo pintura
     if (isPaintMode) return;
     e.stopPropagation();
     onNoteClick(shiftDay);
@@ -39,36 +39,40 @@ const DayCell: React.FC<DayCellProps> = ({
   const shiftColor = getShiftColor(shiftDay.shiftType);
   const hasNotes = shiftDay.notes && shiftDay.notes.trim().length > 0;
 
+  // Estilo base para el día libre en modo oscuro
+  const isFree = shiftDay.shiftType === ShiftType.FREE;
+  const cellBg = isFree ? 'bg-transparent' : shiftColor;
+  const borderColor = isFree ? 'border-white/5' : 'border-transparent';
+  const textColor = isFree ? (isCurrentMonth ? 'text-white/80' : 'text-white/20') : 'text-white';
+
   return (
     <div
-      className={`relative aspect-square bg-white cursor-pointer transition-all select-none touch-manipulation ${
-        isPaintMode ? 'active:scale-95' : 'hover:bg-gray-50'
-      } ${isCurrentMonth ? 'opacity-100' : 'opacity-50'}`}
+      className={`relative aspect-square cursor-pointer transition-all select-none touch-manipulation ${
+        isPaintMode ? 'active:scale-90' : 'hover:bg-white/5'
+      } ${isCurrentMonth ? 'opacity-100' : 'opacity-40'}`}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       style={{ WebkitTapHighlightColor: 'transparent' }}
     >
-      <div className={`h-full flex flex-col items-center justify-center rounded-lg border-2 ${shiftColor}`}>
+      <div className={`h-full flex flex-col items-center justify-center rounded-xl border ${borderColor} ${cellBg} transition-colors duration-300 m-0.5`}>
         {/* Fecha */}
-        <div className={`text-xs font-medium absolute top-1 right-1 ${
-          shiftDay.shiftType === ShiftType.FREE ? 'text-gray-400' : 'text-gray-700'
+        <div className={`text-[10px] font-bold absolute top-1.5 right-1.5 ${
+          isFree ? (isCurrentMonth ? 'text-white/40' : 'text-white/10') : 'text-white/60'
         }`}>
           {dayNumber}
         </div>
 
         {/* Tipo de turno */}
-        {shiftDay.shiftType !== ShiftType.FREE && (
-          <div className="text-sm font-bold">{shiftDay.shiftType}</div>
+        {!isFree && (
+          <div className="text-sm font-black drop-shadow-md">{shiftDay.shiftType}</div>
         )}
 
         {/* Indicador de nota */}
         {hasNotes && (
-          <div className="absolute inset-1 bg-white bg-opacity-90 rounded-md border border-gray-300 p-1 flex flex-col">
-            <div className="flex-1 overflow-hidden">
-              <p className="text-[9px] text-gray-800 leading-tight break-words max-h-full overflow-hidden">
-                {shiftDay.notes}
-              </p>
-            </div>
+          <div className="absolute inset-1.5 bg-black/60 backdrop-blur-md rounded-lg border border-white/10 p-1 flex flex-col overflow-hidden shadow-lg">
+            <p className="text-[8px] text-white/90 leading-tight break-words line-clamp-3">
+              {shiftDay.notes}
+            </p>
           </div>
         )}
       </div>
