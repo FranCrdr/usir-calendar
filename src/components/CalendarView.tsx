@@ -51,12 +51,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       days.push(new Date(year, month, i));
     }
 
-    // Rellenar hasta completar 42 celdas (6 semanas) para mantener altura constante
-    const remainingDays = 42 - days.length;
-    for (let i = 1; i <= remainingDays; i++) {
-      days.push(new Date(year, month + 1, i));
-    }
-
     return days;
   };
 
@@ -86,8 +80,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const days = getDaysInMonth(currentDate);
 
   return (
-    <div className="flex-1 flex flex-col h-full w-full">
-      <div className="py-4 px-6 border-b border-white/10 shrink-0">
+    <div className="flex-1 flex flex-col h-full">
+      <div className="py-6 px-6 border-b border-white/10">
         <div className="flex items-center justify-between">
           <button 
             onClick={() => navigateMonth('prev')} 
@@ -97,7 +91,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           </button>
           
           <div className="text-center">
-            <h1 className="text-xl font-black uppercase tracking-widest text-white">
+            <h1 className="text-2xl font-black uppercase tracking-widest text-white">
               {monthNames[currentDate.getMonth()]} <span className="text-white/40">{currentDate.getFullYear()}</span>
             </h1>
           </div>
@@ -110,9 +104,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-7 mt-4">
+        <div className="grid grid-cols-7 mt-6">
           {daysOfWeek.map(day => (
-            <div key={day} className="text-center text-[10px] font-black text-white/30 py-1 tracking-widest">
+            <div key={day} className="text-center text-[10px] font-black text-white/30 py-2 tracking-widest">
               {day}
             </div>
           ))}
