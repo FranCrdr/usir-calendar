@@ -51,6 +51,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       days.push(new Date(year, month, i));
     }
 
+    // Rellenar hasta completar 6 filas (42 días) para mantener altura constante
+    const remainingDays = 42 - days.length;
+    if (remainingDays > 0) {
+      for (let i = 1; i <= remainingDays; i++) {
+        days.push(new Date(year, month + 1, i));
+      }
+    }
+
     return days;
   };
 
@@ -80,18 +88,18 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const days = getDaysInMonth(currentDate);
 
   return (
-    <div className="flex-1 flex flex-col h-full">
-      <div className="py-6 px-6 border-b border-white/10">
+    <div className="flex-1 flex flex-col h-full overflow-hidden">
+      <div className="py-4 px-6 border-b border-white/10 shrink-0">
         <div className="flex items-center justify-between">
           <button 
             onClick={() => navigateMonth('prev')} 
             className="p-2 hover:bg-white/10 rounded-full transition-all text-white/70 hover:text-white"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
           
           <div className="text-center">
-            <h1 className="text-2xl font-black uppercase tracking-widest text-white">
+            <h1 className="text-xl font-black uppercase tracking-widest text-white">
               {monthNames[currentDate.getMonth()]} <span className="text-white/40">{currentDate.getFullYear()}</span>
             </h1>
           </div>
@@ -100,20 +108,21 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             onClick={() => navigateMonth('next')} 
             className="p-2 hover:bg-white/10 rounded-full transition-all text-white/70 hover:text-white"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="grid grid-cols-7 mt-6">
+        <div className="grid grid-cols-7 mt-4">
           {daysOfWeek.map(day => (
-            <div key={day} className="text-center text-[10px] font-black text-white/30 py-2 tracking-widest">
+            <div key={day} className="text-center text-[9px] font-black text-white/30 py-1 tracking-widest">
               {day}
             </div>
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-px bg-white/5 flex-1 overflow-y-auto">
+      {/* Cuadrícula que se estira para ocupar el 100% del alto sobrante */}
+      <div className="grid grid-cols-7 grid-rows-6 gap-px bg-white/5 flex-1">
         {days.map((date, index) => (
           <DayCell
             key={`${date.toISOString()}-${index}`}
