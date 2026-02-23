@@ -93,12 +93,14 @@ const Index = () => {
         <div className="absolute top-[20%] right-[5%] w-[30%] h-[30%] bg-red-900/10 rounded-full blur-[100px]" />
       </div>
 
-      {/* Header Redondeado - Corregido el degradado para evitar líneas verticales */}
+      {/* Header Redondeado con Rojo Vibrante Difuminado */}
       <div className="bg-[#0a0a0c] py-4 px-4 text-center relative z-10 shadow-lg rounded-3xl mb-3 sm:mb-4 border border-white/10 overflow-hidden">
-        {/* Capa de acento rojo suave */}
-        <div className="absolute inset-0 bg-gradient-to-r from-red-600/30 via-red-900/5 to-transparent pointer-events-none" />
+        {/* Resplandor rojo vibrante en la izquierda para el efecto difuminado */}
+        <div className="absolute -left-10 -top-10 w-48 h-48 bg-red-600/40 rounded-full blur-[60px] pointer-events-none" />
+        {/* Capa de degradado suave para integrar el color */}
+        <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 via-transparent to-transparent pointer-events-none" />
         
-        <h1 className="text-3xl sm:text-4xl font-black text-white mb-1 tracking-tighter relative z-10">USIR</h1>
+        <h1 className="text-3xl sm:text-4xl font-black text-white mb-1 tracking-tighter relative z-10 drop-shadow-[0_0_10px_rgba(220,38,38,0.3)]">USIR</h1>
         <p className="text-white/80 text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase relative z-10">Calendario de Turnos</p>
         
         {isInstallable && (
