@@ -93,15 +93,18 @@ const Index = () => {
         <div className="absolute top-[20%] right-[5%] w-[30%] h-[30%] bg-red-900/10 rounded-full blur-[100px]" />
       </div>
 
-      {/* Header Redondeado */}
-      <div className="bg-gradient-to-r from-red-600 via-red-700 to-black py-4 px-4 text-center relative z-10 shadow-lg rounded-3xl mb-3 sm:mb-4 border border-white/10">
-        <h1 className="text-3xl sm:text-4xl font-black text-white mb-1 tracking-tighter">USIR</h1>
-        <p className="text-white/80 text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase">Calendario de Turnos</p>
+      {/* Header Redondeado - Corregido el degradado para evitar líneas verticales */}
+      <div className="bg-[#0a0a0c] py-4 px-4 text-center relative z-10 shadow-lg rounded-3xl mb-3 sm:mb-4 border border-white/10 overflow-hidden">
+        {/* Capa de acento rojo suave */}
+        <div className="absolute inset-0 bg-gradient-to-r from-red-600/30 via-red-900/5 to-transparent pointer-events-none" />
+        
+        <h1 className="text-3xl sm:text-4xl font-black text-white mb-1 tracking-tighter relative z-10">USIR</h1>
+        <p className="text-white/80 text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase relative z-10">Calendario de Turnos</p>
         
         {isInstallable && (
           <button
             onClick={installApp}
-            className="absolute top-1/2 -translate-y-1/2 right-4 bg-white/10 backdrop-blur-md text-white border border-white/20 px-3 py-1 rounded-full text-[10px] font-medium hover:bg-white/20 transition-colors"
+            className="absolute top-1/2 -translate-y-1/2 right-4 bg-white/10 backdrop-blur-md text-white border border-white/20 px-3 py-1 rounded-full text-[10px] font-medium hover:bg-white/20 transition-colors z-20"
           >
             Instalar
           </button>
