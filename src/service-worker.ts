@@ -1,24 +1,66 @@
 /// <reference lib="webworker" />
 
-const CACHE_NAME = 'turnos-app-v4';
-// Solo precachear rutas que existen en producción. /src/* no existe en build.
-const urlsToCache = ['/', '/index.html'];
+const CACHE_NAME = 'turnos-app-v5';
+
+// No precachear index.html ni /. Así evitamos servir HTML/JS obsoletos tras un deploy (pantalla en blanco).
+const PRECACHE_URLS: string[] = [];
 
 self.addEventListener('install', (event: ExtendableEvent) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache)).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS)).then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('fetch', (event: FetchEvent) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Solo interceptar peticiones de nuestro origen
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  // Navegación (documento) y scripts: network-first para evitar pantalla en blanco
+  // tras un nuevo deploy (el HTML cacheado apuntaría a assets con hash antiguo).
+  if (request.mode === 'navigate' || request.destination === 'script' || request.destination === 'document') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const clone = response.clone();
+          if (response.ok && (request.mode === 'navigate' || request.destination === 'document')) {
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
           return response;
-        }
-        return fetch(event.request);
-      })
+        })
+        .catch(() => caches.match(request).then((cached) => cached || new Response('', { status: 503, statusText: 'Offline' })))
+    );
+    return;
+  }
+
+  // Estilos: network-first, fallback a caché para offline
+  if (request.destination === 'style') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const clone = response.clone();
+          if (response.ok) caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
+  // Resto (imágenes, fuentes, manifest, etc.): cache-first para offline, sin romper el primer load
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).then((response) => {
+        const clone = response.clone();
+        if (response.ok) caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        return response;
+      });
+    })
   );
 });
 
