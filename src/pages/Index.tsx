@@ -173,7 +173,7 @@ const Index = () => {
 
         {isPaintMode && (
           <div className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-pulse whitespace-nowrap">
-            MODO PINTURA: {selectedPaintShift === ShiftType.FREE ? 'B' : selectedPaintShift}
+            MODO PINTURA: {selectedPaintShift}
           </div>
         )}
       </button>
