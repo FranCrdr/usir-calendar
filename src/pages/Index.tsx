@@ -157,7 +157,7 @@ const Index = () => {
       {/* Barra de acciones inferior - Ahora toda la barra es un botón */}
       <button
         onClick={togglePaintMode}
-        className="relative z-10 bg-black/40 backdrop-blur-2xl border border-white/10 py-3 px-4 rounded-3xl max-w-4xl mx-auto w-full flex justify-center items-center group transition-all duration-300 hover:bg-white/5 active:scale-[0.98]"
+        className="relative z-10 bg-black/40 backdrop-blur-2xl border border-white/10 py-3 px-4 rounded-3xl max-w-4xl mx-auto w-full flex justify-center items-center gap-4 group transition-all duration-300 hover:bg-white/5 active:scale-[0.98]"
         title="Modo Pintura"
       >
         <div className={`flex flex-col items-center transition-all duration-300 ${
@@ -172,7 +172,7 @@ const Index = () => {
         </div>
 
         {isPaintMode && (
-          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-bounce whitespace-nowrap">
+          <div className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-pulse whitespace-nowrap">
             MODO PINTURA: {selectedPaintShift}
           </div>
         )}
