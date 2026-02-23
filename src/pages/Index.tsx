@@ -127,31 +127,29 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Barra de acciones inferior */}
-      <div className="relative z-10 bg-black/40 backdrop-blur-2xl border border-white/10 py-3 px-4 rounded-3xl max-w-4xl mx-auto w-full">
-        <div className="flex justify-center items-center">
-          <button
-            onClick={togglePaintMode}
-            className={`flex flex-col items-center group transition-all duration-300 ${
-              isPaintMode 
-                ? 'text-blue-400 scale-110' 
-                : 'text-gray-400 hover:text-white'
-            }`}
-            title="Modo Pintura"
-          >
-            <div className={`p-2.5 rounded-2xl transition-all duration-300 ${isPaintMode ? 'bg-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.3)]' : 'bg-white/5 group-hover:bg-white/10'}`}>
-              <Palette className="w-5 h-5 sm:w-6 sm:h-6" />
-            </div>
-            <span className="text-[9px] mt-1 font-bold uppercase tracking-widest">Pintar</span>
-          </button>
-
-          {isPaintMode && (
-            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-bounce whitespace-nowrap">
-              MODO PINTURA: {selectedPaintShift}
-            </div>
-          )}
+      {/* Barra de acciones inferior - Ahora toda la barra es un botón */}
+      <button
+        onClick={togglePaintMode}
+        className="relative z-10 bg-black/40 backdrop-blur-2xl border border-white/10 py-3 px-4 rounded-3xl max-w-4xl mx-auto w-full flex justify-center items-center group transition-all duration-300 hover:bg-white/5 active:scale-[0.98]"
+        title="Modo Pintura"
+      >
+        <div className={`flex flex-col items-center transition-all duration-300 ${
+          isPaintMode 
+            ? 'text-blue-400 scale-110' 
+            : 'text-gray-400 group-hover:text-white'
+        }`}>
+          <div className={`p-2.5 rounded-2xl transition-all duration-300 ${isPaintMode ? 'bg-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.3)]' : 'bg-white/5 group-hover:bg-white/10'}`}>
+            <Palette className="w-5 h-5 sm:w-6 sm:h-6" />
+          </div>
+          <span className="text-[9px] mt-1 font-bold uppercase tracking-widest">Pintar</span>
         </div>
-      </div>
+
+        {isPaintMode && (
+          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-bounce whitespace-nowrap">
+            MODO PINTURA: {selectedPaintShift}
+          </div>
+        )}
+      </button>
 
       {/* Modales */}
       {shiftEditorDay && (
