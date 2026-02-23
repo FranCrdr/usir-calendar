@@ -7,7 +7,7 @@ import ShiftEditor from '../components/ShiftEditor';
 import NoteModal from '../components/NoteModal';
 import PaintModeView from '../components/PaintModeView';
 import { ShiftType, ShiftDay } from '../types/ShiftTypes';
-import { saveShiftsToStorage, loadShiftsFromStorage } from '../utils/storage';
+import { saveShiftsToStorage, loadShiftsFromStorage, loadUserSettings, saveUserSettings } from '../utils/storage';
 import { usePWA } from '../hooks/usePWA';
 
 const Index = () => {
@@ -18,12 +18,19 @@ const Index = () => {
   const [paintModeViewOpen, setPaintModeViewOpen] = useState(false);
   const [isPaintMode, setIsPaintMode] = useState(false);
   const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.FREE);
+  const [headerMode, setHeaderMode] = useState<'usir' | 'calendar'>('usir');
 
   const { isInstallable, installApp } = usePWA();
 
   useEffect(() => {
     const savedShifts = loadShiftsFromStorage();
     setShiftDays(savedShifts);
+    
+    // Cargar preferencia de cabecera
+    const settings = loadUserSettings();
+    if (settings.headerMode) {
+      setHeaderMode(settings.headerMode);
+    }
   }, []);
 
   useEffect(() => {
@@ -84,6 +91,13 @@ const Index = () => {
     setPaintModeViewOpen(false);
   };
 
+  const toggleHeaderMode = () => {
+    const newMode = headerMode === 'usir' ? 'calendar' : 'usir';
+    setHeaderMode(newMode);
+    const settings = loadUserSettings();
+    saveUserSettings({ ...settings, headerMode: newMode });
+  };
+
   return (
     <div className="h-screen w-full bg-[#050508] flex flex-col relative overflow-hidden p-3 sm:p-4">
       {/* Fondo Espacial con Gradientes */}
@@ -93,19 +107,29 @@ const Index = () => {
         <div className="absolute top-[20%] right-[5%] w-[30%] h-[30%] bg-red-900/10 rounded-full blur-[100px]" />
       </div>
 
-      {/* Header Redondeado con Rojo Vibrante Difuminado */}
-      <div className="bg-[#0a0a0c] py-4 px-4 text-center relative z-10 shadow-lg rounded-3xl mb-3 sm:mb-4 border border-white/10 overflow-hidden">
+      {/* Header Redondeado con Rojo Vibrante Difuminado - Ahora interactivo */}
+      <div 
+        onClick={toggleHeaderMode}
+        className="bg-[#0a0a0c] py-4 px-4 text-center relative z-10 shadow-lg rounded-3xl mb-3 sm:mb-4 border border-white/10 overflow-hidden cursor-pointer active:scale-[0.99] transition-transform select-none"
+      >
         {/* Resplandor rojo vibrante en la izquierda para el efecto difuminado */}
         <div className="absolute -left-10 -top-10 w-48 h-48 bg-red-600/40 rounded-full blur-[60px] pointer-events-none" />
         {/* Capa de degradado suave para integrar el color */}
         <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 via-transparent to-transparent pointer-events-none" />
         
-        <h1 className="text-3xl sm:text-4xl font-black text-white mb-1 tracking-tighter relative z-10 drop-shadow-[0_0_10px_rgba(220,38,38,0.3)]">USIR</h1>
-        <p className="text-white/80 text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase relative z-10">Calendario de Turnos</p>
+        <h1 className="text-3xl sm:text-4xl font-black text-white mb-1 tracking-tighter relative z-10 drop-shadow-[0_0_10px_rgba(220,38,38,0.3)]">
+          {headerMode === 'usir' ? 'USIR' : 'Calendario de Turnos'}
+        </h1>
+        <p className="text-white/80 text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase relative z-10">
+          {headerMode === 'usir' ? 'Calendario de Turnos' : 'USIR'}
+        </p>
         
         {isInstallable && (
           <button
-            onClick={installApp}
+            onClick={(e) => {
+              e.stopPropagation();
+              installApp();
+            }}
             className="absolute top-1/2 -translate-y-1/2 right-4 bg-white/10 backdrop-blur-md text-white border border-white/20 px-3 py-1 rounded-full text-[10px] font-medium hover:bg-white/20 transition-colors z-20"
           >
             Instalar
