@@ -85,7 +85,7 @@ const Index = () => {
   };
 
   return (
-    <div className="h-screen bg-[#050508] flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-[#050508] flex flex-col relative overflow-hidden">
       {/* Fondo Espacial con Gradientes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px]" />
@@ -93,24 +93,24 @@ const Index = () => {
         <div className="absolute top-[20%] right-[5%] w-[30%] h-[30%] bg-red-900/10 rounded-full blur-[100px]" />
       </div>
 
-      {/* Header con bordes redondeados abajo */}
-      <div className="bg-gradient-to-r from-red-600 via-red-700 to-black py-6 px-4 text-center relative z-10 shadow-2xl rounded-b-[2.5rem] border-b border-white/5">
-        <h1 className="text-4xl font-black text-white mb-1 tracking-tighter">USIR</h1>
-        <p className="text-white/80 text-[10px] font-bold tracking-[0.3em] uppercase">Calendario de Turnos</p>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-red-600 via-red-700 to-black py-6 px-4 text-center relative z-10 shadow-lg">
+        <h1 className="text-4xl font-black text-white mb-2 tracking-tighter">USIR</h1>
+        <p className="text-white/80 text-xs font-bold tracking-[0.2em] uppercase">Calendario de Turnos</p>
         
         {isInstallable && (
           <button
             onClick={installApp}
-            className="absolute top-4 right-4 bg-white/10 backdrop-blur-md text-white border border-white/20 px-3 py-1 rounded-full text-[10px] font-bold hover:bg-white/20 transition-colors uppercase tracking-wider"
+            className="absolute top-4 right-4 bg-white/10 backdrop-blur-md text-white border border-white/20 px-3 py-1 rounded-full text-xs font-medium hover:bg-white/20 transition-colors"
           >
-            Instalar
+            Instalar App
           </button>
         )}
       </div>
 
-      {/* Calendario - Ocupando el espacio sobrante */}
-      <div className="flex-1 overflow-hidden relative z-10 px-3 py-4">
-        <div className="h-full max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden flex flex-col">
+      {/* Calendario */}
+      <div className="flex-1 overflow-hidden relative z-10 px-2 py-4">
+        <div className="h-full max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
           <CalendarView
             currentDate={currentDate}
             setCurrentDate={setCurrentDate}
@@ -123,7 +123,7 @@ const Index = () => {
       </div>
 
       {/* Barra de acciones inferior */}
-      <div className="relative z-10 bg-black/40 backdrop-blur-2xl border-t border-white/10 py-4 px-4 rounded-t-[2.5rem]">
+      <div className="relative z-10 bg-black/40 backdrop-blur-2xl border-t border-white/10 py-4 px-4">
         <div className="flex justify-center items-center max-w-4xl mx-auto">
           <button
             onClick={togglePaintMode}
@@ -141,8 +141,8 @@ const Index = () => {
           </button>
 
           {isPaintMode && (
-            <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-bounce uppercase tracking-widest">
-              Pintando: {selectedPaintShift}
+            <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-bounce">
+              MODO PINTURA: {selectedPaintShift}
             </div>
           )}
         </div>
