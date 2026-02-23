@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ShiftDay, ShiftType } from '../types/ShiftTypes';
 import DayCell from './DayCell';
@@ -22,11 +22,26 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   onNoteClick,
   isPaintMode
 }) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const lastPaintedId = useRef<string | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
   const daysOfWeek = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
   const monthNames = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
+
+  // Limpiar el estado de arrastre globalmente
+  useEffect(() => {
+    const handleGlobalPointerUp = () => {
+      setIsDragging(false);
+      lastPaintedId.current = null;
+    };
+
+    window.addEventListener('pointerup', handleGlobalPointerUp);
+    return () => window.removeEventListener('pointerup', handleGlobalPointerUp);
+  }, []);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -51,7 +66,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       days.push(new Date(year, month, i));
     }
 
-    // Rellenar hasta completar 42 celdas (6 semanas) para mantener altura constante
     const remainingCells = 42 - days.length;
     if (remainingCells > 0) {
       for (let i = 1; i <= remainingCells; i++) {
@@ -83,6 +97,43 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       shiftType: ShiftType.FREE,
       notes: ''
     };
+  };
+
+  const handleStartDragging = (day: ShiftDay) => {
+    if (!isPaintMode) return;
+    setIsDragging(true);
+    lastPaintedId.current = day.id;
+    onDayClick(day);
+  };
+
+  const handleEnterDay = (day: ShiftDay) => {
+    if (!isPaintMode || !isDragging || lastPaintedId.current === day.id) return;
+    lastPaintedId.current = day.id;
+    onDayClick(day);
+  };
+
+  // Manejador especial para touchmove (móviles)
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isPaintMode || !isDragging) return;
+    
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    
+    // Buscar el elemento que tenga el atributo data-day-id
+    let current = element;
+    while (current && current !== gridRef.current) {
+      const dayId = current.getAttribute('data-day-id');
+      if (dayId) {
+        const day = days.find(d => d.toISOString() === dayId);
+        if (day && lastPaintedId.current !== dayId) {
+          const shiftDay = getShiftForDate(day);
+          lastPaintedId.current = dayId;
+          onDayClick(shiftDay);
+        }
+        break;
+      }
+      current = current.parentElement;
+    }
   };
 
   const days = getDaysInMonth(currentDate);
@@ -121,8 +172,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
       </div>
 
-      {/* Grid flexible que ocupa el 100% del alto restante */}
-      <div className="grid grid-cols-7 grid-rows-6 gap-px bg-white/5 flex-1">
+      <div 
+        ref={gridRef}
+        className="grid grid-cols-7 grid-rows-6 gap-px bg-white/5 flex-1 touch-none"
+        onTouchMove={handleTouchMove}
+      >
         {days.map((date, index) => (
           <DayCell
             key={`${date.toISOString()}-${index}`}
@@ -131,6 +185,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             onNoteClick={onNoteClick}
             isPaintMode={isPaintMode}
             isCurrentMonth={date.getMonth() === currentDate.getMonth()}
+            onPointerDown={() => handleStartDragging(getShiftForDate(date))}
+            onPointerEnter={() => handleEnterDay(getShiftForDate(date))}
           />
         ))}
       </div>

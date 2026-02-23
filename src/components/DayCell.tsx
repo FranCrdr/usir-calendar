@@ -9,6 +9,8 @@ interface DayCellProps {
   onNoteClick: (day: ShiftDay) => void;
   isPaintMode: boolean;
   isCurrentMonth: boolean;
+  onPointerDown: () => void;
+  onPointerEnter: () => void;
 }
 
 const DayCell: React.FC<DayCellProps> = ({
@@ -16,45 +18,52 @@ const DayCell: React.FC<DayCellProps> = ({
   onDayClick,
   onNoteClick,
   isPaintMode,
-  isCurrentMonth
+  isCurrentMonth,
+  onPointerDown,
+  onPointerEnter
 }) => {
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
+  const handlePointerDown = (e: React.PointerEvent) => {
     if (isPaintMode) {
-      onDayClick(shiftDay);
-    } else {
-      onNoteClick(shiftDay);
+      // Evitar que el navegador intente arrastrar el elemento o seleccionar texto
+      e.preventDefault();
+      onPointerDown();
     }
   };
 
-  const handleDoubleClick = (e: React.MouseEvent) => {
-    if (isPaintMode) return;
-    e.stopPropagation();
-    onNoteClick(shiftDay);
+  const handlePointerEnter = (e: React.PointerEvent) => {
+    if (isPaintMode) {
+      onPointerEnter();
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Si no estamos en modo pintura, el click normal abre las notas
+    if (!isPaintMode) {
+      onNoteClick(shiftDay);
+    }
   };
 
   const dayNumber = shiftDay.date.getDate();
   const shiftColor = getShiftColor(shiftDay.shiftType);
   const hasNotes = shiftDay.notes && shiftDay.notes.trim().length > 0;
 
-  // Estilo base para el día libre en modo oscuro
   const isFree = shiftDay.shiftType === ShiftType.FREE;
   const cellBg = isFree ? 'bg-transparent' : shiftColor;
   const borderColor = isFree ? 'border-white/5' : 'border-transparent';
 
   return (
     <div
-      className={`relative h-full w-full cursor-pointer transition-all select-none touch-manipulation ${
+      className={`relative h-full w-full cursor-pointer transition-all select-none touch-none ${
         isPaintMode ? 'active:scale-95' : 'hover:bg-white/5'
       } ${isCurrentMonth ? 'opacity-100' : 'opacity-30'}`}
+      onPointerDown={handlePointerDown}
+      onPointerEnter={handlePointerEnter}
       onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
+      data-day-id={shiftDay.date.toISOString()}
       style={{ WebkitTapHighlightColor: 'transparent' }}
     >
       <div className={`h-full w-full flex flex-col items-center justify-center rounded-lg sm:rounded-xl border ${borderColor} ${cellBg} transition-colors duration-300`}>
-        {/* Fecha - Blanco radiante y negrita */}
+        {/* Fecha */}
         <div className={`text-[10px] sm:text-[11px] font-black absolute top-1 right-1 sm:top-1.5 sm:right-1.5 drop-shadow-[0_0_2px_rgba(255,255,255,0.3)] ${
           isCurrentMonth ? 'text-white' : 'text-white/20'
         }`}>
