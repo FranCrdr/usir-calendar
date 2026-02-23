@@ -93,8 +93,8 @@ const Index = () => {
         <div className="absolute top-[20%] right-[5%] w-[30%] h-[30%] bg-red-900/10 rounded-full blur-[100px]" />
       </div>
 
-      {/* Header Redondeado - Corregido con overflow-hidden y degradado ajustado */}
-      <div className="bg-gradient-to-r from-red-600 to-[#0a0a0c] py-4 px-4 text-center relative z-10 shadow-lg rounded-3xl mb-3 sm:mb-4 border border-white/10 overflow-hidden">
+      {/* Header Redondeado */}
+      <div className="bg-gradient-to-r from-red-600 via-red-700 to-black py-4 px-4 text-center relative z-10 shadow-lg rounded-3xl mb-3 sm:mb-4 border border-white/10">
         <h1 className="text-3xl sm:text-4xl font-black text-white mb-1 tracking-tighter">USIR</h1>
         <p className="text-white/80 text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase">Calendario de Turnos</p>
         
