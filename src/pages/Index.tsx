@@ -110,7 +110,7 @@ const Index = () => {
       {/* Header Redondeado con Rojo Vibrante Difuminado - Ahora interactivo */}
       <div 
         onClick={toggleHeaderMode}
-        className="bg-[#0a0a0c] py-4 px-4 text-center relative z-10 shadow-lg rounded-3xl mb-3 sm:mb-4 border border-white/10 overflow-hidden cursor-pointer active:scale-[0.99] transition-transform select-none"
+        className="bg-[#0a0a0c] py-4 px-4 text-center relative z-10 shadow-lg rounded-3xl mb-3 sm:mb-4 border border-white/10 overflow-hidden cursor-pointer active:scale-[0.99] transition-transform select-none min-h-[80px] flex flex-col justify-center"
       >
         {/* Resplandor rojo vibrante en la izquierda para el efecto difuminado */}
         <div className="absolute -left-10 -top-10 w-48 h-48 bg-red-600/40 rounded-full blur-[60px] pointer-events-none" />
@@ -120,9 +120,12 @@ const Index = () => {
         <h1 className="text-3xl sm:text-4xl font-black text-white mb-1 tracking-tighter relative z-10 drop-shadow-[0_0_10px_rgba(220,38,38,0.3)]">
           {headerMode === 'usir' ? 'USIR' : 'Calendario de Turnos'}
         </h1>
-        <p className="text-white/80 text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase relative z-10">
-          {headerMode === 'usir' ? 'Calendario de Turnos' : 'USIR'}
-        </p>
+        
+        {headerMode === 'usir' && (
+          <p className="text-white/80 text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase relative z-10">
+            Calendario de Turnos
+          </p>
+        )}
         
         {isInstallable && (
           <button
