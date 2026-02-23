@@ -17,7 +17,7 @@ const Index = () => {
   const [noteModalDay, setNoteModalDay] = useState<ShiftDay | null>(null);
   const [paintModeViewOpen, setPaintModeViewOpen] = useState(false);
   const [isPaintMode, setIsPaintMode] = useState(false);
-  const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType>(ShiftType.FREE);
+  const [selectedPaintShift, setSelectedPaintShift] = useState<ShiftType | 'B'>(ShiftType.FREE);
   const [headerMode, setHeaderMode] = useState<'usir' | 'calendar'>('usir');
 
   const { isInstallable, installApp } = usePWA();
@@ -41,9 +41,13 @@ const Index = () => {
 
   const handleDayClick = (day: ShiftDay) => {
     if (isPaintMode) {
-      const newShiftType = day.shiftType === selectedPaintShift 
+      // Si el modo es 'B' (Borrar), el objetivo es siempre dejarlo LIBRE ('L')
+      // Si es un turno normal, el objetivo es ese turno
+      const targetShift = selectedPaintShift === 'B' ? ShiftType.FREE : selectedPaintShift;
+      
+      const newShiftType = day.shiftType === targetShift 
         ? ShiftType.FREE 
-        : selectedPaintShift;
+        : targetShift;
         
       const updatedDay = { ...day, shiftType: newShiftType };
       updateDay(updatedDay);
@@ -85,7 +89,7 @@ const Index = () => {
     }
   };
 
-  const handleSelectPaintShift = (shiftType: ShiftType) => {
+  const handleSelectPaintShift = (shiftType: ShiftType | 'B') => {
     setSelectedPaintShift(shiftType);
     setIsPaintMode(true);
     setPaintModeViewOpen(false);

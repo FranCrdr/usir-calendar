@@ -3,8 +3,8 @@ import { X, Paintbrush, RotateCcw, Eraser } from 'lucide-react';
 import { ShiftType, getShiftColor } from '../types/ShiftTypes';
 
 interface PaintModeViewProps {
-  selectedShift: ShiftType;
-  onSelectShift: (shift: ShiftType) => void;
+  selectedShift: ShiftType | 'B';
+  onSelectShift: (shift: ShiftType | 'B') => void;
   onClose: () => void;
 }
 
@@ -27,7 +27,7 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
   };
 
   const handleEraserSelect = () => {
-    onSelectShift(ShiftType.FREE);
+    onSelectShift('B');
     onClose();
   };
 
@@ -67,7 +67,7 @@ const PaintModeView: React.FC<PaintModeViewProps> = ({
             <button
               onClick={handleEraserSelect}
               className={`w-full p-4 rounded-2xl text-center transition-all border-2 flex flex-col items-center justify-center gap-1 ${
-                selectedShift === ShiftType.FREE 
+                selectedShift === 'B' 
                   ? 'bg-red-500/20 text-white border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.2)] scale-[1.02]' 
                   : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10'
               }`}
