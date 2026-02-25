@@ -47,8 +47,9 @@ const DayCell: React.FC<DayCellProps> = ({
   const shiftColor = getShiftColor(shiftDay.shiftType);
   const hasNotes = shiftDay.notes && shiftDay.notes.trim().length > 0;
 
+  // Ya no forzamos bg-transparent para que el color verde de "Libre" se vea
+  const cellBg = shiftColor;
   const isFree = shiftDay.shiftType === ShiftType.FREE;
-  const cellBg = isFree ? 'bg-transparent' : shiftColor;
   const borderColor = isFree ? 'border-white/5' : 'border-transparent';
 
   return (
@@ -70,10 +71,10 @@ const DayCell: React.FC<DayCellProps> = ({
           {dayNumber}
         </div>
 
-        {/* Tipo de turno */}
-        {!isFree && (
-          <div className="text-xs sm:text-sm font-black drop-shadow-md text-white">{shiftDay.shiftType}</div>
-        )}
+        {/* Tipo de turno (incluyendo L si está pintado) */}
+        <div className="text-xs sm:text-sm font-black drop-shadow-md text-white">
+          {shiftDay.shiftType}
+        </div>
 
         {/* Indicador de nota */}
         {hasNotes && (
