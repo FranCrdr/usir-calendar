@@ -69,15 +69,15 @@ const DayCell: React.FC<DayCellProps> = ({
           {dayNumber}
         </div>
 
-        {/* Tipo de turno (ahora incluye L) */}
+        {/* Tipo de turno */}
         {!isEmpty && (
           <div className="text-xs sm:text-sm font-black drop-shadow-md text-white">{shiftDay.shiftType}</div>
         )}
 
-        {/* Indicador de nota */}
+        {/* Indicador de nota - MEJORADO PARA LEGIBILIDAD */}
         {hasNotes && (
-          <div className="absolute inset-1 bg-black/60 backdrop-blur-sm rounded-md border border-white/10 p-0.5 flex flex-col overflow-hidden shadow-lg pointer-events-none">
-            <p className="text-[7px] sm:text-[8px] text-white/90 leading-tight break-words line-clamp-2 sm:line-clamp-3">
+          <div className="absolute inset-x-0.5 bottom-0.5 bg-black/85 backdrop-blur-md rounded-md border border-white/20 p-1 flex flex-col overflow-hidden shadow-2xl pointer-events-none z-10">
+            <p className="text-[9px] sm:text-[10px] font-bold text-white leading-tight break-words line-clamp-2 text-center">
               {shiftDay.notes}
             </p>
           </div>
