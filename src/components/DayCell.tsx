@@ -24,7 +24,6 @@ const DayCell: React.FC<DayCellProps> = ({
 }) => {
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isPaintMode) {
-      // Evitar que el navegador intente arrastrar el elemento o seleccionar texto
       e.preventDefault();
       onPointerDown();
     }
@@ -37,7 +36,6 @@ const DayCell: React.FC<DayCellProps> = ({
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    // Si no estamos en modo pintura, el click normal abre las notas
     if (!isPaintMode) {
       onNoteClick(shiftDay);
     }
@@ -47,9 +45,10 @@ const DayCell: React.FC<DayCellProps> = ({
   const shiftColor = getShiftColor(shiftDay.shiftType);
   const hasNotes = shiftDay.notes && shiftDay.notes.trim().length > 0;
 
-  const isFree = shiftDay.shiftType === ShiftType.FREE;
-  const cellBg = isFree ? 'bg-transparent' : shiftColor;
-  const borderColor = isFree ? 'border-white/5' : 'border-transparent';
+  // Solo es transparente si el tipo es NONE
+  const isEmpty = shiftDay.shiftType === ShiftType.NONE;
+  const cellBg = isEmpty ? 'bg-transparent' : shiftColor;
+  const borderColor = isEmpty ? 'border-white/5' : 'border-transparent';
 
   return (
     <div
@@ -70,8 +69,8 @@ const DayCell: React.FC<DayCellProps> = ({
           {dayNumber}
         </div>
 
-        {/* Tipo de turno */}
-        {!isFree && (
+        {/* Tipo de turno (ahora incluye L) */}
+        {!isEmpty && (
           <div className="text-xs sm:text-sm font-black drop-shadow-md text-white">{shiftDay.shiftType}</div>
         )}
 

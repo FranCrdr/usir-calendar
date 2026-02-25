@@ -26,7 +26,6 @@ const Index = () => {
     const savedShifts = loadShiftsFromStorage();
     setShiftDays(savedShifts);
     
-    // Cargar preferencia de cabecera
     const settings = loadUserSettings();
     if (settings.headerMode) {
       setHeaderMode(settings.headerMode);
@@ -41,12 +40,13 @@ const Index = () => {
 
   const handleDayClick = (day: ShiftDay) => {
     if (isPaintMode) {
-      // Si el modo es 'B' (Borrar), el objetivo es siempre dejarlo LIBRE ('L')
-      // Si es un turno normal, el objetivo es ese turno
-      const targetShift = selectedPaintShift === 'B' ? ShiftType.FREE : selectedPaintShift;
+      // Si el modo es 'B' (Borrar), el objetivo es NONE (transparente)
+      // Si es un turno (incluyendo 'L'), el objetivo es ese turno
+      const targetShift = selectedPaintShift === 'B' ? ShiftType.NONE : selectedPaintShift;
       
+      // Si el día ya tiene ese turno, lo borramos (toggle)
       const newShiftType = day.shiftType === targetShift 
-        ? ShiftType.FREE 
+        ? ShiftType.NONE 
         : targetShift;
         
       const updatedDay = { ...day, shiftType: newShiftType };
@@ -104,21 +104,17 @@ const Index = () => {
 
   return (
     <div className="h-screen w-full bg-[#050508] flex flex-col relative overflow-hidden p-3 sm:p-4">
-      {/* Fondo Espacial con Gradientes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[120px]" />
         <div className="absolute top-[20%] right-[5%] w-[30%] h-[30%] bg-red-900/10 rounded-full blur-[100px]" />
       </div>
 
-      {/* Header Redondeado con Rojo Vibrante Difuminado - Ahora interactivo */}
       <div 
         onClick={toggleHeaderMode}
         className="bg-[#0a0a0c] py-4 px-4 text-center relative z-10 shadow-lg rounded-3xl mb-3 sm:mb-4 border border-white/10 overflow-hidden cursor-pointer active:scale-[0.99] transition-transform select-none min-h-[80px] flex flex-col justify-center"
       >
-        {/* Resplandor rojo vibrante en la izquierda para el efecto difuminado */}
         <div className="absolute -left-10 -top-10 w-48 h-48 bg-red-600/40 rounded-full blur-[60px] pointer-events-none" />
-        {/* Capa de degradado suave para integrar el color */}
         <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 via-transparent to-transparent pointer-events-none" />
         
         <h1 className="text-3xl sm:text-4xl font-black text-white mb-1 tracking-tighter relative z-10 drop-shadow-[0_0_10px_rgba(220,38,38,0.3)]">
@@ -144,7 +140,6 @@ const Index = () => {
         )}
       </div>
 
-      {/* Calendario Flexible */}
       <div className="flex-1 relative z-10 overflow-hidden mb-3 sm:mb-4">
         <div className="h-full max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
           <CalendarView
@@ -158,7 +153,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Barra de acciones inferior - Ahora toda la barra es un botón */}
       <button
         onClick={togglePaintMode}
         className="relative z-10 bg-black/40 backdrop-blur-2xl border border-white/10 py-3 px-4 rounded-3xl max-w-4xl mx-auto w-full flex justify-center items-center gap-4 group transition-all duration-300 hover:bg-white/5 active:scale-[0.98]"
@@ -177,12 +171,11 @@ const Index = () => {
 
         {isPaintMode && (
           <div className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-bold shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-pulse whitespace-nowrap">
-            MODO PINTURA: {selectedPaintShift}
+            MODO PINTURA: {selectedPaintShift === 'B' ? 'BORRAR' : selectedPaintShift}
           </div>
         )}
       </button>
 
-      {/* Modales */}
       {shiftEditorDay && (
         <ShiftEditor
           shiftDay={shiftEditorDay}

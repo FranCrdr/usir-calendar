@@ -32,7 +32,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
 
-  // Limpiar el estado de arrastre globalmente
   useEffect(() => {
     const handleGlobalPointerUp = () => {
       setIsDragging(false);
@@ -94,7 +93,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     return existing || {
       id: date.toISOString(),
       date,
-      shiftType: ShiftType.FREE,
+      shiftType: ShiftType.NONE, // Por defecto ahora es vacío/transparente
       notes: ''
     };
   };
@@ -112,14 +111,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     onDayClick(day);
   };
 
-  // Manejador especial para touchmove (móviles)
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isPaintMode || !isDragging) return;
     
     const touch = e.touches[0];
     const element = document.elementFromPoint(touch.clientX, touch.clientY);
     
-    // Buscar el elemento que tenga el atributo data-day-id
     let current = element;
     while (current && current !== gridRef.current) {
       const dayId = current.getAttribute('data-day-id');
