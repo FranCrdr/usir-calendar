@@ -51,20 +51,19 @@ const DayCell: React.FC<DayCellProps> = ({
   const shiftColor = getShiftColor(shiftDay.shiftType);
   const hasNotes = shiftDay.notes && shiftDay.notes.trim().length > 0;
 
-  // Solo es transparente si el tipo es NONE
   const isEmpty = shiftDay.shiftType === ShiftType.NONE;
   const cellBg = isEmpty ? 'bg-transparent' : shiftColor;
   
-  // Borde especial para hoy: azul radiante si está vacío, o un anillo exterior si tiene turno
+  // Resplandor blanco radiante para hoy
   const borderColor = isToday 
-    ? 'border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.6)] z-20' 
+    ? 'border-white shadow-[0_0_20px_rgba(255,255,255,0.8)] z-30' 
     : (isEmpty ? 'border-white/5' : 'border-transparent');
 
   return (
     <div
       className={`relative h-full w-full cursor-pointer transition-all select-none touch-none ${
         isPaintMode ? 'active:scale-95' : 'hover:bg-white/5'
-      } ${isCurrentMonth ? 'opacity-100' : 'opacity-30'} ${isToday ? 'scale-[1.02]' : ''}`}
+      } ${isCurrentMonth ? 'opacity-100' : 'opacity-30'} ${isToday ? 'scale-[1.05]' : ''}`}
       onPointerDown={handlePointerDown}
       onPointerEnter={handlePointerEnter}
       onClick={handleClick}
@@ -72,14 +71,14 @@ const DayCell: React.FC<DayCellProps> = ({
       style={{ WebkitTapHighlightColor: 'transparent' }}
     >
       <div className={`h-full w-full flex flex-col items-center justify-center rounded-lg sm:rounded-xl border-2 ${borderColor} ${cellBg} transition-all duration-300`}>
-        {/* Indicador visual extra para hoy (punto brillante) */}
+        {/* Indicador visual extra para hoy (punto blanco brillante) */}
         {isToday && (
-          <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_8px_#60a5fa] animate-pulse" />
+          <div className="absolute top-1 left-1 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_10px_#fff] animate-pulse" />
         )}
 
-        {/* Fecha */}
-        <div className={`text-[10px] sm:text-[11px] font-black absolute top-1 right-1 sm:top-1.5 sm:right-1.5 drop-shadow-[0_0_2px_rgba(255,255,255,0.3)] ${
-          isToday ? 'text-blue-300' : (isCurrentMonth ? 'text-white' : 'text-white/20')
+        {/* Fecha con efecto Galaxia si es hoy */}
+        <div className={`text-[11px] sm:text-[13px] font-black absolute top-1 right-1 sm:top-1.5 sm:right-1.5 drop-shadow-[0_0_2px_rgba(0,0,0,0.5)] ${
+          isToday ? 'animate-galaxy' : (isCurrentMonth ? 'text-white' : 'text-white/20')
         }`}>
           {dayNumber}
         </div>
